@@ -1,0 +1,31 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link href="{% static 'styles.css' %}" rel="stylesheet">
+    </head>
+
+    <body>
+        Infinite Blackjack strategy
+
+        {% for card_img in cards_imgs %}
+            card_img.card
+        {% endfor %}
+
+        -----------
+
+        {% for tes in test %}
+            tes.card
+        {% endfor %}
+    </body>
+</html>
+
+
+
+
+
+
+
+
+
