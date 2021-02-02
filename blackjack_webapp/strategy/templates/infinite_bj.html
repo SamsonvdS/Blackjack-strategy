@@ -3,21 +3,37 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <title>Infinite Blackjack</title>
         <link href="{% static 'styles.css' %}" rel="stylesheet">
     </head>
 
     <body>
-        Infinite Blackjack strategy
+        <a href="{% url 'index' %}">Home - Strategy</a><br>
 
-        {% for card_img in cards_imgs %}
-            card_img.card
+        <h1>Strategy for - Infinite Blackjack - from Evolution Gaming</h1>
+
+        <div>
+        {% for heart in hearts %}
+            <input type="image" class="card_button" src="/static/cards_jpgs/{{ heart.image }}" alt="{{ heart }}">
         {% endfor %}
-
-        -----------
-
-        {% for tes in test %}
-            tes.card
+        </div>
+        <div>
+        {% for diamond in diamonds %}
+            <input type="image" class="card_button" src="/static/cards_jpgs/{{ diamond.image }}" alt="{{ diamond }}">
         {% endfor %}
+        </div>
+        <div>
+        {% for spade in spades %}
+            <input type="image" class="card_button" src="/static/cards_jpgs/{{ spade.image }}" alt="{{ spade }}">
+        {% endfor %}
+        <div>
+        {% for club in clubs %}
+            <input type="image" class="card_button" src="/static/cards_jpgs/{{ club.image }}" alt="{{ club }}">
+        {% endfor %}
+        </div>
+
+
+        
     </body>
 </html>
 

@@ -3,7 +3,7 @@ from django.db import models
 
 class Card_Image(models.Model):
     """This keeps data about card images"""
-    image = models.ImageField(upload_to="static/cards_jpg")
+    image = models.ImageField(upload_to="static/cards_jpg2")
     card = models.CharField(max_length=3)
     suit = models.CharField(max_length=10)
 

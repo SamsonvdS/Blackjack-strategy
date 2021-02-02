@@ -15,16 +15,29 @@ def setup_database_images():
     absolute_path = os.path.dirname(os.path.abspath(__file__))
 
     # save images data in database
-    for file in os.listdir(f"{absolute_path}/static/cards_jpgs"):
-        # name part of the filename 10S.jpg -> 10S
-        name = file[:-4]
+    for filename in os.listdir(f"{absolute_path}/static/cards_jpgs"):
+        # name part of the filename | 10S.jpg -> 10S
+        name = filename[:-4]
+
+        # create full suit name
+        suit = name[-1]
+        if suit == 'S':
+            suit = 'Spades'
+        elif suit == 'H':
+            suit = 'Hearts'
+        elif suit == 'C':
+            suit = 'Clubs'
+        elif suit == 'D':
+            suit = 'Diamonds'
 
         # save image data in database
         card_image = Card_Image.objects.create(
-            image = file,
-            card = name[:-1],
-            suit = name[-1],
+            image=filename,
+            card=name[:-1],
+            suit=suit,
         )
+
+    
         
 
 
