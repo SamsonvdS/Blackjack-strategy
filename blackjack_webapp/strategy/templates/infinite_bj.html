@@ -3,8 +3,10 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <link rel="icon" type="image" href="{% static 'favicon.jpg' %}">
         <title>Infinite Blackjack</title>
         <link href="{% static 'styles.css' %}" rel="stylesheet">
+        <script src="{% static 'scripts_strategy.js' %}"></script> 
     </head>
 
     <body>
@@ -12,23 +14,39 @@
 
         <h1>Strategy for - Infinite Blackjack - from Evolution Gaming</h1>
 
-        <div>
-        {% for heart in hearts %}
-            <input type="image" class="card_button" src="/static/cards_jpgs/{{ heart.image }}" alt="{{ heart }}">
-        {% endfor %}
+        <div class="all_suited_cards">
+            {% for heart in hearts %}
+                <div class="single_cards">
+                    <input type="number" class="card_button_number" min="0" step="1" value="0"/>
+                    <input type="image" class="card_button_image" src="/static/cards_jpgs/{{ heart.image }}" alt="{{ heart }}">
+                </div>
+            {% endfor %}
         </div>
-        <div>
-        {% for diamond in diamonds %}
-            <input type="image" class="card_button" src="/static/cards_jpgs/{{ diamond.image }}" alt="{{ diamond }}">
-        {% endfor %}
+
+        <div class="all_suited_cards">
+            {% for diamond in diamonds %}
+                <div class="single_cards">
+                    <input type="number" class="card_button_number" min="0" step="1" value="0" onclick="onClick()"/>
+                    <input type="image" class="card_button_image" src="/static/cards_jpgs/{{ diamond.image }}" alt="{{ diamond }}">
+                </div>
+            {% endfor %}
         </div>
-        <div>
+
+        <div class="all_suited_cards">
         {% for spade in spades %}
-            <input type="image" class="card_button" src="/static/cards_jpgs/{{ spade.image }}" alt="{{ spade }}">
+            <div class="single_cards">
+                <input type="number" class="card_button_number" min="0" step="1" value="0"/>
+                <input type="image" class="card_button_image" src="/static/cards_jpgs/{{ spade.image }}" alt="{{ spade }}">
+            </div>
         {% endfor %}
-        <div>
+        </div>
+
+        <div class="all_suited_cards">
         {% for club in clubs %}
-            <input type="image" class="card_button" src="/static/cards_jpgs/{{ club.image }}" alt="{{ club }}">
+            <div class="single_cards">
+                <input type="number" class="card_button_number" min="0" step="1" value="0"/>
+                <input type="image" class="card_button_image" src="/static/cards_jpgs/{{ club.image }}" alt="{{ club }}">
+            </div>
         {% endfor %}
         </div>
 

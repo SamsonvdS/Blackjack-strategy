@@ -1,13 +1,23 @@
 
-.card_button {
-    height: 100px;
+.card_button_number {
+    width: 63px;
     outline: none;
+    
 }
-.card_button:hover {
+.card_button_image {
+    width: 70px;
+    outline: none;
+    display: inline-block;
+}
+.card_button_image:hover {
     filter: brightness(0.8);
 }
 
-
+.single_cards {
+    width: 70px;
+    display: inline-block;
+    margin: 5px;
+}
 
 
 
