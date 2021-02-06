@@ -2,16 +2,14 @@ import pandas
 
 
 def create_simple_probdf(probdf):
-    """
-    creates simplified probdf for bust it side bet, because 
-    it doesn't work with normal probdf
-    """
-    probdf_simple = probdf.loc[:, 'Total_cards'].copy()
-    probdf_simple.at['10'] += sum(probdf_simple['J':'K'])
+    """creates simplified probdf where J, Q, K are seen as a 10"""
+    probdf_simple = probdf.copy()
+    
+    # add the number of cards for each suit of J, Q, and K to 10
+    probdf_simple.loc['10', :] += probdf_simple.loc['J':'K', :].sum()
     probdf_simple.drop(['J', 'Q', 'K'], inplace=True)
-
+    
     return probdf_simple
-
 
 
 def create_prob_df(number_of_decks):

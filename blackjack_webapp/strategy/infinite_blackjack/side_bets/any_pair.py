@@ -1,3 +1,4 @@
+from .deck_df import create_prob_df, create_simple_probdf
 
 import random
 import math
@@ -16,54 +17,48 @@ The goal is to receive a pair in the first two cards that you are dealt
 """
 
 
-def nCr(n, r):
-    """calculates number of combinations (without replacement)"""
-    if r > n:
-        return 0
-    
-    f = math.factorial
-    return int(f(n) / (f(r) * f(n-r)))
-    
-# make sure function can do vectorized operations
-nCr = np.vectorize(nCr)
+def calculate_ev(probdf):
+    """
+    calculates the probabilities of each outcome for the any pair side bet
+    and then it calculates the expected value of betting on the any pair side bet
+    returns expected value
+    """
+    # copy probdf so it doesn't interfere with other scripts
+    probdf = probdf.copy()
+
+    # make sure function can do vectorized operations
+    nCr = np.vectorize(math.comb)
+
+    # number of possible winning pair combinations
+    probdf.loc[:, 'All_winning_pairs'] = nCr(probdf['Total_cards'], 2)
+
+    # calculate number of suited pair combinations
+    probdf['Suited_pairs'] = 0
+    for suit in suits:
+        probdf.loc[:, 'Suited_pairs'] += nCr(probdf.loc[:, suit], 2)
+
+    # calculate unsuited pairs
+    probdf['Unsuited_pairs'] = probdf.All_winning_pairs - probdf.Suited_pairs
 
 
 
 
-# number of possible winning pair combinations
-probdf.loc[:, 'All_winning_pairs'] = nCr(probdf['Total_cards'], 2)
+    # total cards in deck and total 2 card combinations
+    total_cards = sum(probdf.Total_cards)
+    total_combinations = math.comb(total_cards, 2)
 
-# calculate number of suited pair combinations
-probdf['Suited_pairs'] = 0
-for suit in suits:
-    probdf.loc[:, 'Suited_pairs'] += nCr(probdf.loc[:, suit], 2)
-
-# calculate unsuited pairs
-probdf['Unsuited_pairs'] = probdf.All_winning_pairs - probdf.Suited_pairs
+    prob_suited_pair = sum(probdf.Suited_pairs) / total_combinations
+    prob_unsuited_pair = sum(probdf.Unsuited_pairs) / total_combinations
+    prob_losing_pair = 1 - prob_suited_pair - prob_unsuited_pair
 
 
+    suited_pair_payout = 25
+    unsuited_pair_payout = 8
 
+    return_suited_pair = prob_suited_pair * suited_pair_payout
+    return_unsuited_pair = prob_unsuited_pair * unsuited_pair_payout
+    return_losing_pair = -prob_losing_pair
 
-# total cards in deck and total 2 card combinations
-total_cards = sum(probdf.Total_cards)
-total_combinations = nCr(total_cards, 2)
+    total_ev = return_suited_pair + return_unsuited_pair + return_losing_pair
 
-prob_suited_pair = sum(probdf.Suited_pairs) / total_combinations
-prob_unsuited_pair = sum(probdf.Unsuited_pairs) / total_combinations
-prob_losing_pair = 1 - prob_suited_pair - prob_unsuited_pair
-print("prob_suited_pair", prob_suited_pair)
-print("prob_unsuited_pair", prob_unsuited_pair)
-print("prob_losing_pair", prob_losing_pair)
-print("-----------------------")
-
-suited_pair_payout = 25
-unsuited_pair_payout = 8
-
-return_suited_pair = prob_suited_pair * suited_pair_payout
-return_unsuited_pair = prob_unsuited_pair * unsuited_pair_payout
-return_losing_pair = -prob_losing_pair
-
-total_ev = return_suited_pair + return_unsuited_pair + return_losing_pair
-
-print("total_ev", total_ev)
-
+    return total_ev
