@@ -71,9 +71,10 @@ class Deckdf:
         # sum total cards of a face value
         probdf['Total_cards'] = probdf.loc[:, self.suits].sum(axis=1)
 
+        # update attributes
         self.number_of_decks_remaining = sum(probdf['Total_cards']) / N_CARDS_IN_DECK
-
-        return probdf
+        self.probdf = probdf
+        self.probdf_simple = create_simple_probdf()
 
 
 
