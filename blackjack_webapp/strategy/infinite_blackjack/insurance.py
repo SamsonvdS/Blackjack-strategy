@@ -1,6 +1,7 @@
+from .deck_df import create_simple_probdf
+
 import random
 import pandas as pd
-import scipy.stats as st
 
 
 """
@@ -16,6 +17,11 @@ def calculate_ev(probdf):
     and then it calculates the expected value of taking insurance
     returns expected value
     """
+    # copy probdf so it doesn't interfere with other scripts
+    probdf = probdf.copy()
+    
+    probdf_simple = create_simple_probdf(probdf)
+
     # payout in units
     insurance_payout = 2
 

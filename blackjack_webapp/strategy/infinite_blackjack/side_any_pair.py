@@ -1,10 +1,8 @@
-from .deck_df import create_prob_df, create_simple_probdf
+from .deck_df import create_simple_probdf
 
-import random
 import math
 import pandas as pd
 import numpy as np
-import scipy.stats as st
 
 
 """

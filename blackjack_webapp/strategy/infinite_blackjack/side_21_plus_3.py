@@ -1,13 +1,8 @@
-from .deck_df import create_prob_df, create_simple_probdf
+from .deck_df import create_simple_probdf
 
-import copy
-import random
 import math
 import numpy as np
 import pandas as pd
-
-
-
 
 
 """
@@ -29,6 +24,8 @@ def calculate_probabilities(probdf):
     calculates the probabilities for each outcome of the 21+3 bet
     returns dictionary with the probabilities
     """
+    suits = ['Clubs', 'Diamonds', 'Hearts', 'Spades']
+
     # make sure function can do vectorized operations
     nCr = np.vectorize(math.comb)
 

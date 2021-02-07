@@ -1,7 +1,5 @@
-from .deck_df import create_prob_df, create_simple_probdf
+from .deck_df import create_simple_probdf
 
-import copy
-import random
 import math
 import pandas as pd
 from itertools import combinations_with_replacement
@@ -22,7 +20,6 @@ You win with this side bet if your first two cards and the dealer's open card ar
 
 def get_all_combinations():
     """this part finds all card combinations that add up to 19, 20, 21"""
-
     # values of cards in the deck
     card_values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 
@@ -64,6 +61,8 @@ def calculate_ev(probdf):
     and then it calculates the expected value of betting on the hot 3 side bet
     returns expected value
     """
+    suits = ['Clubs', 'Diamonds', 'Hearts', 'Spades']
+
     # copy probdf so it doesn't interfere with other scripts
     probdf = probdf.copy()
 
