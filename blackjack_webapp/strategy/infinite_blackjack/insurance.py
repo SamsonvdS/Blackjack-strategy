@@ -1,5 +1,3 @@
-from .deck_df import create_simple_probdf
-
 import random
 import pandas as pd
 
@@ -11,16 +9,14 @@ import pandas as pd
 - Insurance pays 2 units
 """
 
-def calculate_ev(probdf):
+def calculate_ev(Deckdf):
     """
     calculates the probability of blackjack if dealer has an A
     and then it calculates the expected value of taking insurance
     returns expected value
     """
-    # copy probdf so it doesn't interfere with other scripts
-    probdf = probdf.copy()
-    
-    probdf_simple = create_simple_probdf(probdf)
+    # copy simple probdf so it doesn't interfere with other scripts
+    probdf_simple = Deckdf.probdf_simple.copy()
 
     # payout in units
     insurance_payout = 2

@@ -1,5 +1,3 @@
-from .deck_df import create_simple_probdf
-
 import math
 import pandas as pd
 import numpy as np
@@ -15,29 +13,29 @@ The goal is to receive a pair in the first two cards that you are dealt
 """
 
 
-def calculate_ev(probdf):
+def calculate_ev(Deckdf):
     """
     calculates the probabilities of each outcome for the any pair side bet
     and then it calculates the expected value of betting on the any pair side bet
     returns expected value
     """
     # copy probdf so it doesn't interfere with other scripts
-    probdf = probdf.copy()
+    probdf = Deckdf.probdf.copy()
 
     # make sure function can do vectorized operations
     nCr = np.vectorize(math.comb)
+
 
     # number of possible winning pair combinations
     probdf.loc[:, 'All_winning_pairs'] = nCr(probdf['Total_cards'], 2)
 
     # calculate number of suited pair combinations
     probdf['Suited_pairs'] = 0
-    for suit in suits:
+    for suit in Deckdf.suits:
         probdf.loc[:, 'Suited_pairs'] += nCr(probdf.loc[:, suit], 2)
 
     # calculate unsuited pairs
     probdf['Unsuited_pairs'] = probdf.All_winning_pairs - probdf.Suited_pairs
-
 
 
 

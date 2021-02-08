@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 # number of cards in a standard deck
 N_CARDS_IN_DECK = 52
 
@@ -15,8 +16,8 @@ class Deckdf:
         self.number_of_decks = number_of_decks
         self.number_of_decks_remaining = number_of_decks
 
-        self.probdf = create_prob_df()
-        self.probdf_simple = create_simple_probdf()
+        self.probdf = self.create_prob_df()
+        self.probdf_simple = self.create_simple_probdf()
 
 
     def create_simple_probdf(self):
@@ -74,7 +75,7 @@ class Deckdf:
         # update attributes
         self.number_of_decks_remaining = sum(probdf['Total_cards']) / N_CARDS_IN_DECK
         self.probdf = probdf
-        self.probdf_simple = create_simple_probdf()
+        self.probdf_simple = self.create_simple_probdf()
 
 
 

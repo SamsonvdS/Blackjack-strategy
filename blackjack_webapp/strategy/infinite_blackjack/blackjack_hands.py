@@ -1,5 +1,3 @@
-from .deck_df import create_simple_probdf
-
 import pandas as pd
 
 """
@@ -22,12 +20,12 @@ The rules are as follows:
 """
 
 
-def make_decision(probdf, number_of_decks, dealer_hand, player_hand):
+def make_decision(Deckdf, dealer_hand, player_hand):
     """creates the basic_strategy chart"""
-    # copy probdf so it doesn't interfere with other scripts
-    probdf = probdf.copy()
-    
-    probdf_simple = create_simple_probdf(probdf)
+    number_of_decks = Deckdf.number_of_decks
+
+    # copy simple probdf so it doesn't interfere with other scripts
+    probdf_simple = Deckdf.probdf_simple.copy()
 
     # all possible hands player can have
     possible_hands = ['Hard 2','Hard 3','Hard 4','Hard 5','Hard 6','Hard 7','Hard 8',
@@ -104,8 +102,7 @@ def make_decision(probdf, number_of_decks, dealer_hand, player_hand):
     running_count -= abs(number_of_decks * 4 - sum(minus_1))
 
     # calculate true count
-    number_of_decks_remaining = sum(probdf_simple.loc[:, 'Total_cards']) / 52
-    true_count = running_count / number_of_decks_remaining
+    true_count = running_count / Deckdf.number_of_decks_remaining
     
     """adjusts basic strategy for some deviations"""
     if true_count >= 0:

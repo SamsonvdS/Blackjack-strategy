@@ -1,5 +1,3 @@
-from .deck_df import create_simple_probdf
-
 import math
 import numpy as np
 import pandas as pd
@@ -19,13 +17,11 @@ You win with this side bet if your first two cards and the dealer's open card ar
 """
 
 
-def calculate_probabilities(probdf):
+def calculate_probabilities(Deckdf, probdf):
     """
     calculates the probabilities for each outcome of the 21+3 bet
     returns dictionary with the probabilities
     """
-    suits = ['Clubs', 'Diamonds', 'Hearts', 'Spades']
-
     # make sure function can do vectorized operations
     nCr = np.vectorize(math.comb)
 
@@ -41,7 +37,7 @@ def calculate_probabilities(probdf):
             
     # number of possible suited trips combinations
     probdf['Suited_trips'] = 0
-    for suit in suits:
+    for suit in Deckdf.suits:
         probdf['Suited_trips'] += nCr(probdf.loc[:, suit], 3)
         
     # number of possible three of a kinds (non-suited trips) combinations
@@ -56,7 +52,7 @@ def calculate_probabilities(probdf):
     # number of possible straight flush combinations
     probdf['Straight_flush'] = 0
     for sequence in cards_sequences:
-        for suit in suits:
+        for suit in Deckdf.suits:
             probdf.loc[sequence[0], 'Straight_flush'] += probdf.loc[sequence, suit].product()
             
     # number of possible straight combinations
@@ -65,8 +61,8 @@ def calculate_probabilities(probdf):
 
     # number of possible same suit card combinations
     probdf['Total_same_suit'] = 0
-    for suit in suits:
-        probdf['Total_same_suit'] += nCr(probdf.loc[:, suit].sum(), 3) / len(cards) # len(card) to correct combinations for a per card value instead of total
+    for suit in Deckdf.suits:
+        probdf['Total_same_suit'] += nCr(probdf.loc[:, suit].sum(), 3) / len(Deckdf.cards) # len(card) to correct combinations for a per card value instead of total
 
     # number of possible flush combinations
     probdf['Flush'] = probdf['Total_same_suit'] - probdf['Straight_flush'] - probdf['Suited_trips']
@@ -74,18 +70,18 @@ def calculate_probabilities(probdf):
     return probdf
 
 
-def calculate_ev(probdf):
+def calculate_ev(Deckdf):
     """calculate and return expected value of 21+3 bet"""
     # copy probdf so it doesn't interfere with other scripts
-    probdf = probdf.copy()
+    probdf = Deckdf.probdf.copy()
 
     # calculate probabilities of each outcome
-    calculate_probabilities(probdf)
+    calculate_probabilities(Deckdf, probdf)
 
 
     # total 3 card combinations
     total_cards = sum(probdf.Total_cards)
-    total_combinations = nCr(total_cards, 3)
+    total_combinations = math.comb(total_cards, 3)
 
     # probabilities
     prob_suited_trips = sum(probdf.Suited_trips) / total_combinations

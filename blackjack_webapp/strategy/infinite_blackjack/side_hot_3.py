@@ -1,5 +1,3 @@
-from .deck_df import create_simple_probdf
-
 import math
 import pandas as pd
 from itertools import combinations_with_replacement
@@ -55,19 +53,14 @@ def get_all_combinations():
     return hot_3_combos
 
 
-def calculate_ev(probdf):
+def calculate_ev(Deckdf):
     """
     calculates the probabilities of each outcome for the hot 3 side bet
     and then it calculates the expected value of betting on the hot 3 side bet
     returns expected value
     """
-    suits = ['Clubs', 'Diamonds', 'Hearts', 'Spades']
-
-    # copy probdf so it doesn't interfere with other scripts
-    probdf = probdf.copy()
-
-    # create simple probdf
-    simple_probdf = create_simple_probdf(probdf)
+    # copy simple probdf so it doesn't interfere with other scripts
+    simple_probdf = Deckdf.probdf_simple.copy()
     
     # get all combinations
     hot_3_combos = get_all_combinations()
@@ -94,7 +87,7 @@ def calculate_ev(probdf):
     # number of combinations to get a suited 21
     simple_probdf['Suited_21'] = 0
     for combi in hot_3_combos['combos_21']:
-        for suit in suits:
+        for suit in Deckdf.suits:
             total_ncr = 0
             
             for card in set(combi):

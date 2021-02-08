@@ -1,5 +1,3 @@
-from .deck_df import create_simple_probdf
-
 import math
 import pandas as pd
 from itertools import combinations_with_replacement
@@ -120,17 +118,14 @@ def get_all_combinations():
     return all_combos
 
 
-def calculate_ev(probdf):
+def calculate_ev(Deckdf):
     """
     calculates the probabilities of each outcome of the bust it side bet
     and then it calculates the expected value of betting on the bust it side bet
     returns expected value
     """
-    # copy probdf so it doesn't interfere with other scripts
-    probdf = probdf.copy()
-
-    # simple probdf
-    probdf_simple = create_simple_probdf(probdf)
+    # copy simple probdf so that it doesn't interfere with other calculations
+    probdf_simple = Deckdf.probdf_simple.copy()
 
     # get all combinations
     all_combos = get_all_combinations()
@@ -199,7 +194,6 @@ def calculate_ev(probdf):
             
 
 
-
     # rescale probabilities to scale of 1 (100%)
     for card in open_card_prob:
         card = open_card_prob[card]
@@ -215,7 +209,6 @@ def calculate_ev(probdf):
         for prob in card:
             card[prob] /= total_prob
             
-
 
 
     # probabilities needed for either blackjack the game or the bust it side bet
@@ -236,11 +229,9 @@ def calculate_ev(probdf):
 
 
 
-
     # correct bust it probabilities, because blackjack pushes the bust it side bet
     for prob in bust_it_prob:
         bust_it_prob[prob] -= bust_it_prob[prob] * prob_combos['prob_not_busted_BJ']
-
 
 
 
