@@ -36,19 +36,24 @@ def infinite_blackjack(request):
     """for first load of infinite blackjack page"""
     # calculate ev for bets
     ev_insurance = calculate_insurance(deckdf)
-    ev_side_bets = calculate_side_bets(deckdf)
+    ev_hot_3, ev_21_plus_3, ev_any_pair, ev_bust_it = calculate_side_bets(deckdf)
 
     # turn dataframe into dictionary with lists per suit
     probdf_dict = deckdf.probdf.to_dict('list')
 
     # get order lists of cards for each suit
     hearts, diamonds, spades, clubs = order_cards()
-
+  
     return render(request, 'infinite_blackjack.html', {
         'hearts': zip(hearts, probdf_dict['Hearts']),
         'diamonds': zip(diamonds, probdf_dict['Diamonds']),
         'spades': zip(spades, probdf_dict['Spades']),
         'clubs': zip(clubs, probdf_dict['Clubs']),
+        'ev_insurance': f'{ev_insurance:.4f}',
+        'ev_hot_3': f'{ev_hot_3:.4f}',
+        'ev_21_plus_3': f'{ev_21_plus_3:.4f}',
+        'ev_any_pair': f'{ev_any_pair:.4f}',
+        'ev_bust_it': f'{ev_bust_it:.4f}',
     })
 
 

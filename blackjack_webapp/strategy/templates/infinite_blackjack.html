@@ -11,49 +11,68 @@
         <script src="{% static 'scripts_strategy.js' %}"></script> 
     </head>
 
-    <body>
+    <body onload="adjust_colors()">
         <a href="{% url 'index' %}">Home - Strategy</a><br>
 
         <h1>Strategy for - Infinite Blackjack - from Evolution Gaming</h1>
 
-        <div class="all_suited_cards">
-            {% for heart, value in hearts %}
+        <div class="column">
+            <div class="all_suited_cards">
+                {% for heart, value in hearts %}
+                    <div class="single_cards">
+                        <input type="number" id="{{ heart.image }}_number" class="card_button_number" min="0" step="1" value="{{ value }}"/>
+                        <input type="image" id="{{ heart.image }}_image" class="card_button_image" src="/static/cards_jpgs/{{ heart.image }}" alt="{{ heart }}" onclick="minus_card('{{ heart.image }}');">
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="all_suited_cards">
+                {% for diamond, value in diamonds %}
+                    <div class="single_cards">
+                        <input type="number" id="{{ diamond.image }}_number" class="card_button_number" min="0" step="1" value="{{ value }}"/>
+                        <input type="image" id="{{ diamond.image }}_image" class="card_button_image" src="/static/cards_jpgs/{{ diamond.image }}" alt="{{ diamond }}" onclick="minus_card('{{ diamond.image }}');">
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="all_suited_cards">
+            {% for spade, value in spades %}
                 <div class="single_cards">
-                    <input type="number" id="{{ heart.image }}_number" class="card_button_number" min="0" step="1" value="{{ value }}"/>
-                    <input type="image" id="{{ heart.image }}_image" class="card_button_image" src="/static/cards_jpgs/{{ heart.image }}" alt="{{ heart }}" onclick="minus_card('{{ heart.image }}');">
+                    <input type="number" id="{{ spade.image }}_number" class="card_button_number" min="0" step="1" value="{{ value }}"/>
+                    <input type="image" id="{{ spade.image }}_image" class="card_button_image" src="/static/cards_jpgs/{{ spade.image }}" alt="{{ spade }}" onclick="minus_card('{{ spade.image }}');">
                 </div>
             {% endfor %}
-        </div>
+            </div>
 
-        <div class="all_suited_cards">
-            {% for diamond, value in diamonds %}
+            <div class="all_suited_cards">
+            {% for club, value in clubs %}
                 <div class="single_cards">
-                    <input type="number" id="{{ diamond.image }}_number" class="card_button_number" min="0" step="1" value="{{ value }}"/>
-                    <input type="image" id="{{ diamond.image }}_image" class="card_button_image" src="/static/cards_jpgs/{{ diamond.image }}" alt="{{ diamond }}" onclick="minus_card('{{ diamond.image }}');">
+                    <input type="number" id="{{ club.image }}_number" class="card_button_number" min="0" step="1" value="{{ value }}"/>
+                    <input type="image" id="{{ club.image }}_image" class="card_button_image" src="/static/cards_jpgs/{{ club.image }}" alt="{{ club }}" onclick="minus_card('{{ club.image }}');">
                 </div>
             {% endfor %}
-        </div>
-
-        <div class="all_suited_cards">
-        {% for spade, value in spades %}
-            <div class="single_cards">
-                <input type="number" id="{{ spade.image }}_number" class="card_button_number" min="0" step="1" value="{{ value }}"/>
-                <input type="image" id="{{ spade.image }}_image" class="card_button_image" src="/static/cards_jpgs/{{ spade.image }}" alt="{{ spade }}" onclick="minus_card('{{ spade.image }}');">
             </div>
-        {% endfor %}
         </div>
-
-        <div class="all_suited_cards">
-        {% for club, value in clubs %}
-            <div class="single_cards">
-                <input type="number" id="{{ club.image }}_number" class="card_button_number" min="0" step="1" value="{{ value }}"/>
-                <input type="image" id="{{ club.image }}_image" class="card_button_image" src="/static/cards_jpgs/{{ club.image }}" alt="{{ club }}" onclick="minus_card('{{ club.image }}');">
-            </div>
-        {% endfor %}
-        </div>
-
 
         
+        <div class="column">
+            <button>New Shoe</button>
+            <p class="side_bets"><input class="side_bets_ev" id="hot_3" value="{{ ev_hot_3 }}" readonly> Hot 3</p>
+            <p class="side_bets"><input class="side_bets_ev" id="21+3" value="{{ ev_21_plus_3 }}" readonly> 21+3</p>
+            <p class="side_bets"><input class="side_bets_ev" id="any_pair" value="{{ ev_any_pair }}" readonly> Any Pair</p>
+            <p class="side_bets"><input class="side_bets_ev" id="bust_it" value="{{ ev_bust_it }}" readonly> Bust It</p>
+            <br><br>
+            
+            <button>New Round</button>
+            <p class="side_bets"><input class="side_bets_ev" id="insurance" value="{{ ev_insurance }}" readonly> Insurance</p>
+            <br><br>
+
+            <button>Dealer Hand</button>
+            <p class="dealer_hand">empty</p>
+            <button>Player Hand</button>
+            <p class="player_hand">empty</p>
+        </div>
+
     </body>
 </html>
 

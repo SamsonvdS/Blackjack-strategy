@@ -19,6 +19,18 @@
 }
 
 
+.column {
+    margin-left: 15px;
+    float: left;
+}
+.side_bets_ev {
+    width: 50px;
+    border-width: 1px;
+}
+.side_bets {
+    display: block;
+}
+
 
 
 
