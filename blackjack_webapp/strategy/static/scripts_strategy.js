@@ -4,10 +4,19 @@
 var dealer_hand = [];
 var player_hand = [];
 
+// save the left (new) side of the splitted hand
+var player_split_hand = [];
+
+
 /* 
 registers card to dealer and/or player hand
 */
 function onDoubleClick(element) {
+    // correct the double substraction of card count
+    const image = element.target.alt;
+    plus_card(image);
+
+    // get class of element
     const element_class = element.target.className
 
     // only do this if double click was on card image button
@@ -45,8 +54,7 @@ function onDoubleClick(element) {
         }
         
         // display cards
-        document.getElementById("dealer_hand").innerHTML = dealer_hand
-        document.getElementById("player_hand").innerHTML = player_hand 
+        display_hand_cards()
     }
 }
 
@@ -59,11 +67,11 @@ function onClick(element) {
     
     // get class of element
     const element_class = element.target.className;
-    const image = element.target.alt;
     console.log(element_class);
 
     // if a card button image is clicked 
     if (element_class === "card_button_image") {
+        const image = element.target.alt;
         minus_card(image);
     }
     else if (element_class === "new_round") {
@@ -71,10 +79,75 @@ function onClick(element) {
         dealer_hand.length = 0;
         player_hand.length = 0;
     }
+    else if (element_class === "undo_dealer") {
+        dealer_hand.pop();
+    }
+    else if (element_class === "undo_player") {
+        player_hand.pop();
+    }
+    else if (element_class === "split") {
+        // split is only possible if two cards in hand
+        if (player_hand.length === 2) {
+            let card1 = player_hand[0];
+            let card2 = player_hand[player_hand.length - 1];
+            
+            card1 = card1.substring(0, card1.length - 1);
+            card2 = card2.substring(0, card2.length - 1);
+
+            // cards with value of 10
+            let tens = ['10', 'J', 'Q', 'K'];
+
+            if (tens.includes(card1)) {
+                card1 = '10';
+            }
+            if (tens.includes(card2)) {
+                card2 = '10';
+            }
+
+            // only split if also the card values are the same
+            if (card1 === card2) {
+                // add card from player hand to split hand
+                player_split_hand.push(player_hand.pop());
+            }
+        }
+        // correct split (unsplit)
+        else if (player_hand.length === 1 && player_split_hand.length === 1) {
+            player_hand.push(player_split_hand.pop());
+        }
+    }
+    else if (element_class === "second_hand" && player_split_hand.length > 0) {
+        // swap player hand and split hand
+        let temp = player_hand;
+        player_hand = player_split_hand;
+        player_split_hand = temp;
+    }
+    else if (element_class === "new_round") {
+        dealer_hand.length = 0;
+        player_hand.length = 0;
+        player_split_hand.length = 0;
+    }
+    else if (element_class === "new_shoe") {
+        dealer_hand.length = 0;
+        player_hand.length = 0;
+        player_split_hand.length = 0;
+    }
+
+    // display cards
+    display_hand_cards()
 }
 
 
-// takes one count off of the counter element from a specific card
+
+
+/* displays cards in dealer and player hands */
+function display_hand_cards() {
+    document.getElementById("dealer_hand").innerHTML = dealer_hand;
+    document.getElementById("player_hand").innerHTML = player_hand;
+    document.getElementById("player_split_hand").innerHTML = player_split_hand; 
+}
+
+
+/* takes one count off of the counter element from a specific card */
 function minus_card(image) {
     // get specific counter element
     const counter_element = document.getElementById(image + "_number");
@@ -90,7 +163,19 @@ function minus_card(image) {
 }
 
 
-/* changes color to green if ev is positive, otherwise red*/
+/* adds one count to the counter element from a specific card */
+function plus_card(image) {
+    // get specific counter element
+    const counter_element = document.getElementById(image + "_number");
+
+    // increase value by one
+    let count = counter_element.value;
+    count++;
+    counter_element.value = count;
+}
+
+
+/* changes color to green if ev is positive, otherwise red */
 function adjust_ev_colors() {
     // for every element with this class change background and text color
     document.querySelectorAll('.side_bets_ev').forEach(function(side_bet) {

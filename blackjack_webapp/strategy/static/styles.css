@@ -1,7 +1,6 @@
 
 .card_button_number {
     width: 63px;
-    outline: none;
 }
 .card_button_image {
     width: 70px;
@@ -30,6 +29,38 @@
 .side_bets {
     display: block;
 }
+
+
+
+.calculate_action {
+    margin-bottom: 30px;
+}
+
+.undo_dealer {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.undo_player {
+    display: inline-block;
+    margin-bottom: 5px;
+}
+.split {
+    display: inline-block;
+    margin-bottom: 5px;
+}
+.second_hand {
+    display: block;
+    margin-bottom: 5px;
+}
+
+
+
+
+
+
+
+
 
 
 

@@ -56,21 +56,35 @@
 
         
         <div class="column">
-            <button>New Shoe</button>
-            <p class="side_bets"><input class="side_bets_ev" id="hot_3" value="{{ ev_hot_3 }}" readonly> Hot 3</p>
-            <p class="side_bets"><input class="side_bets_ev" id="21+3" value="{{ ev_21_plus_3 }}" readonly> 21+3</p>
-            <p class="side_bets"><input class="side_bets_ev" id="any_pair" value="{{ ev_any_pair }}" readonly> Any Pair</p>
-            <p class="side_bets"><input class="side_bets_ev" id="bust_it" value="{{ ev_bust_it }}" readonly> Bust It</p>
-            <br><br>
+            <div class="side_bet_info">
+                <button class="new_shoe">New Shoe</button>
+                <p class="side_bets"><input class="side_bets_ev" id="hot_3" value="{{ ev_hot_3 }}" readonly> Hot 3</p>
+                <p class="side_bets"><input class="side_bets_ev" id="21+3" value="{{ ev_21_plus_3 }}" readonly> 21+3</p>
+                <p class="side_bets"><input class="side_bets_ev" id="any_pair" value="{{ ev_any_pair }}" readonly> Any Pair</p>
+                <p class="side_bets"><input class="side_bets_ev" id="bust_it" value="{{ ev_bust_it }}" readonly> Bust It</p>
+                <br><br>
             
-            <button class="new_round">New Round</button>
-            <p class="side_bets"><input class="side_bets_ev" id="insurance" value="{{ ev_insurance }}" readonly> Insurance</p>
+                <button class="new_round">New Round</button>
+                <p class="side_bets"><input class="side_bets_ev" id="insurance" value="{{ ev_insurance }}" readonly> Insurance</p>
+            </div>
             <br><br>
 
-            Dealer Hand<button>undo</button>
-            <p id="dealer_hand"></p>
-            Player Hand<button>undo</button>
-            <p id="player_hand"></p>
+            <div class="hand_info">
+                <button class="calculate_action">Calculate Action</button>
+
+                <button class="undo_dealer">Undo</button>
+                Dealer Hand
+                <p id="dealer_hand"></p>
+                <br>
+
+                <button class="undo_player">Undo</button>
+                <button class="split">Split</button>
+                <button class="second_hand">Second Hand</button>
+                Player Hand
+                <p id="player_hand"></p>
+                ----------
+                <p id="player_split_hand"></p>
+            </div>
         </div>
 
     </body>
