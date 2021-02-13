@@ -98,8 +98,8 @@ def make_decision(Deckdf, dealer_hand, player_hand):
     running_count = 0
     running_count += abs(number_of_decks * 4 * 3 - sum(plus_1))
     running_count += 2 * abs(number_of_decks * 4 * 3 - sum(plus_2)) 
-    running_count -= 2 * abs(number_of_decks * 4 * 4 - sum(minus_2))
-    running_count -= abs(number_of_decks * 4 - sum(minus_1))
+    running_count -= 2 * abs(number_of_decks * 4 * 4 - minus_2)
+    running_count -= abs(number_of_decks * 4 - minus_1)
 
     # calculate true count
     true_count = running_count / Deckdf.number_of_decks_remaining
@@ -202,4 +202,4 @@ def make_decision(Deckdf, dealer_hand, player_hand):
             action = "stand"
 
 
-    return action, running_count, true_count
+    return action, true_count

@@ -1,6 +1,8 @@
 # general imports
 import pandas as pd
+import numpy as np
 import json
+import ast  
 
 # django imports
 from django.shortcuts import render
@@ -12,6 +14,8 @@ from .models import Card_Image
 from .helpers import order_cards, how_to_play_hand, calculate_insurance, calculate_side_bets
 from .one_time_setups import setup_database_images
 from .infinite_blackjack.deck_df import Deckdf
+
+
 
 """
 things that only need to be done once at server start
@@ -82,14 +86,84 @@ def infinite_blackjack_update(request):
 
 
 def infinite_calculate_hand(request):
-    print(request)
+    """
+    calculates the action that the player should take
+    returns json object
+    """
+    # convert json ascii string to dictionary
+    js_data = ast.literal_eval(request.body.decode('UTF-8'))
     
-    hearts, diamonds, spades, clubs = order_cards()
+    # change numbers from string to int
+    Clubs = np.array(js_data['Clubs'], dtype=np.int64)
+    Diamonds = np.array(js_data['Diamonds'], dtype=np.int64)
+    Hearts = np.array(js_data['Hearts'], dtype=np.int64)
+    Spades = np.array(js_data['Spades'], dtype=np.int64)
+
+    # update deckdf
+    deckdf.update_prob_df(Clubs, Diamonds, Hearts, Spades)
+    
+    # cards worth 10
+    tens = ['J', 'Q', 'K']
+
+    # clean cards in hands and conver J, Q, K to 10 
+    dealer_hand = [card[:-1] if card[:-1] not in tens else '10' for card in js_data['dealer_hand']]
+    player_hand = [card[:-1] if card[:-1] not in tens else '10' for card in js_data['player_hand']]
+
+    # calculate player's decision and ev of insurance
+    ev_insurance = calculate_insurance(deckdf)
+    hand_decision = how_to_play_hand(deckdf, dealer_hand, player_hand)
+    
+    # turn data into json
+    json_data = json.dumps({
+        'hand_decision': hand_decision[0],
+        'true_count': hand_decision[1],
+        'ev_insurance': ev_insurance,
+    })
+    
+    return HttpResponse(json_data)
+
+
+def infinite_new_round(request):
+    """
+    calculates ev of all side bets
+    returns json object
+    """
+    print(ast.literal_eval(request.body.decode('UTF-8')))
+    # convert json ascii string to dictionary
+    js_data = ast.literal_eval(request.body.decode('UTF-8'))
+    
+    # calculate ev for bets
+    ev_insurance = calculate_insurance(deckdf)
+    ev_hot_3, ev_21_plus_3, ev_any_pair, ev_bust_it = calculate_side_bets(deckdf)
+
+
     suits = ['hearts', 'diamonds', 'spades', 'clubs']
     
     dictt = {suit:[str(card.image) for card in card_type] for suit in suits for card_type in order_cards()}
-    print(dictt)
+    
     return HttpResponse(json.dumps(dictt))
+
+
+def infinite_new_shoe(request):
+    """
+    resets everything and recalculates ev of side bets
+    returns json object
+    """
+    print(ast.literal_eval(request.body.decode('UTF-8')))
+    # convert json ascii string to dictionary
+    js_data = ast.literal_eval(request.body.decode('UTF-8'))
+    
+    # calculate ev for bets
+    ev_insurance = calculate_insurance(deckdf)
+    ev_hot_3, ev_21_plus_3, ev_any_pair, ev_bust_it = calculate_side_bets(deckdf)
+
+
+    suits = ['hearts', 'diamonds', 'spades', 'clubs']
+    
+    dictt = {suit:[str(card.image) for card in card_type] for suit in suits for card_type in order_cards()}
+    
+    return HttpResponse(json.dumps(dictt))
+
 
 
 

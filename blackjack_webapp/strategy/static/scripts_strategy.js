@@ -1,8 +1,15 @@
-// get csrftoken 
+// set necessary variables
 var csrftoken;
+var current_url;
+
+// things to be done at page load
 window.addEventListener('DOMContentLoaded', function() {
+    // get csrftoken 
     csrftoken = document.getElementsByName("csrfmiddlewaretoken");
     csrftoken = csrftoken[0].value;
+
+    // get current url
+    current_url = window.location.href;
 })
 
 
@@ -126,34 +133,54 @@ function onClick(element) {
         player_split_hand = temp;
     }
     else if (element_class === "new_round") {
-        dealer_hand.length = 0;
-        player_hand.length = 0;
-        player_split_hand.length = 0;
+        // create data dictionary
+        let data = get_card_counts();
 
-
-    }
-    else if (element_class === "new_shoe") {
-        dealer_hand.length = 0;
-        player_hand.length = 0;
-        player_split_hand.length = 0;
-
-
-    }
-    else if (element_class === "calculate_action") {
-        console.log(csrftoken)
-        fetch('http://127.0.0.1:8000/strategy/infinite_blackjack/calculate_hand', {
+        // send data to server
+        fetch(`${current_url}/new_round`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRFToken': csrftoken,
         },
-        body: JSON.stringify({
-            'player_hand': player_hand,
-            
-        }),
-        credentials: 'same-origin',
+        body: JSON.stringify(data)
         })
-        .then(response => {console.log(response); response.json()})
+        // turn response into json (dictionary)
+        .then(response => response.json())
+        .then(data => {
+        console.log('Success:', data);
+        })
+
+        // empty dealer and player hands
+        dealer_hand.length = 0;
+        player_hand.length = 0;
+        player_split_hand.length = 0;
+    }
+    else if (element_class === "new_shoe") {
+
+
+
+        dealer_hand.length = 0;
+        player_hand.length = 0;
+        player_split_hand.length = 0;
+    }
+    else if (element_class === "calculate_action") {
+        // create data dictionary
+        let data = get_card_counts();
+        data['player_hand'] = player_hand;
+        data['dealer_hand'] = dealer_hand;
+
+        // send data to server
+        fetch(`${current_url}/calculate_hand`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+        },
+        body: JSON.stringify(data)
+        })
+        // turn response into json (dictionary)
+        .then(response => response.json())
         .then(data => {
         console.log('Success:', data);
         })
@@ -162,6 +189,43 @@ function onClick(element) {
     // display cards
     display_hand_cards()
 }
+
+
+/* 
+gets counts for each card
+returns dictionary of counts per suit 
+*/
+function get_card_counts() {
+    let save_counts = {
+        'Hearts': [],
+        'Diamonds': [],
+        'Spades': [],
+        'Clubs': [],
+    };
+    let id;
+    document.querySelectorAll('.card_button_number').forEach(function (element) {
+        // get first three characters of id
+        id = element.id.substring(0, 3);
+        
+        // save value of element at correct place
+        if (id.includes('H')) {
+            save_counts['Hearts'].push(element.value);
+        }
+        else if (id.includes('D')) {
+            save_counts['Diamonds'].push(element.value);
+        }
+        else if (id.includes('S')) {
+            save_counts['Spades'].push(element.value);
+        }
+        else if (id.includes('C')) {
+            save_counts['Clubs'].push(element.value);
+        }
+
+    })
+    
+    return save_counts
+}
+
 
 
 
