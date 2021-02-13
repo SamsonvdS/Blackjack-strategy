@@ -11,7 +11,10 @@
         <script src="{% static 'scripts_strategy.js' %}"></script> 
     </head>
 
-    <body onload="adjust_ev_colors();" onclick="onClick(event);" ondblclick="onDoubleClick(event);">
+    <body onclick="onClick(event);" ondblclick="onDoubleClick(event);">
+        {% csrf_token %}
+        
+
         <a href="{% url 'index' %}">Home - Strategy</a><br>
 
         <h1>Strategy for - Infinite Blackjack - from Evolution Gaming</h1>

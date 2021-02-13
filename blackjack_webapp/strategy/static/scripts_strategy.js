@@ -1,3 +1,10 @@
+// get csrftoken 
+var csrftoken;
+window.addEventListener('DOMContentLoaded', function() {
+    csrftoken = document.getElementsByName("csrfmiddlewaretoken");
+    csrftoken = csrftoken[0].value;
+})
+
 
 
 // save cards in dealer/player hand
@@ -63,11 +70,8 @@ function onDoubleClick(element) {
 decides what will be done, depending on element clicked
 */
 function onClick(element) {
-    console.log(element);
-    
     // get class of element
     const element_class = element.target.className;
-    console.log(element_class);
 
     // if a card button image is clicked 
     if (element_class === "card_button_image") {
@@ -125,11 +129,34 @@ function onClick(element) {
         dealer_hand.length = 0;
         player_hand.length = 0;
         player_split_hand.length = 0;
+
+
     }
     else if (element_class === "new_shoe") {
         dealer_hand.length = 0;
         player_hand.length = 0;
         player_split_hand.length = 0;
+
+
+    }
+    else if (element_class === "calculate_action") {
+        console.log(csrftoken)
+        fetch('http://127.0.0.1:8000/strategy/infinite_blackjack/calculate_hand', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+        },
+        body: JSON.stringify({
+            'player_hand': player_hand,
+            
+        }),
+        credentials: 'same-origin',
+        })
+        .then(response => {console.log(response); response.json()})
+        .then(data => {
+        console.log('Success:', data);
+        })
     }
 
     // display cards
@@ -181,11 +208,9 @@ function adjust_ev_colors() {
     document.querySelectorAll('.side_bets_ev').forEach(function(side_bet) {
         if (side_bet.value > 0) {
             side_bet.style.backgroundColor = "green";
-            side_bet.style.color = "white";
         }
         else {
             side_bet.style.backgroundColor = "red";
-            side_bet.style.color = "white";
         }
     })
 }

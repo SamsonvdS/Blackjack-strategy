@@ -1,5 +1,6 @@
 # general imports
 import pandas as pd
+import json
 
 # django imports
 from django.shortcuts import render
@@ -76,6 +77,25 @@ def infinite_blackjack_update(request):
         'spades': spades,
         'clubs': clubs,
     })
+
+
+
+
+def infinite_calculate_hand(request):
+    print(request)
+    
+    hearts, diamonds, spades, clubs = order_cards()
+    suits = ['hearts', 'diamonds', 'spades', 'clubs']
+    
+    dictt = {suit:[str(card.image) for card in card_type] for suit in suits for card_type in order_cards()}
+    print(dictt)
+    return HttpResponse(json.dumps(dictt))
+
+
+
+
+
+
 
 
 

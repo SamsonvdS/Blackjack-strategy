@@ -25,11 +25,12 @@
 .side_bets_ev {
     width: 50px;
     border-width: 1px;
+    color: white;
+    background-color: red;
 }
 .side_bets {
     display: block;
 }
-
 
 
 .calculate_action {
