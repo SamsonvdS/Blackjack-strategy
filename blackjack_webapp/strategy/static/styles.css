@@ -33,6 +33,16 @@
 }
 
 
+.results_input {
+    width: 40px;
+    border-width: 1px;
+    color: white;
+}
+.results {
+    display: block;
+}
+
+
 .calculate_action {
     margin-bottom: 30px;
 }
@@ -40,6 +50,9 @@
 .undo_dealer {
     display: block;
     margin-bottom: 5px;
+}
+#dealer_hand {
+    margin-top: 2px;
 }
 
 .undo_player {
@@ -54,7 +67,12 @@
     display: block;
     margin-bottom: 5px;
 }
-
+#player_hand {
+    margin-top: 2px;
+}
+#player_split_hand {
+    margin-top: 2px;
+}
 
 
 

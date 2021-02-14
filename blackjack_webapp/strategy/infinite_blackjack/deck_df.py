@@ -82,7 +82,7 @@ class Deckdf:
         self.probdf_simple = self.create_simple_probdf()
 
 
-    def reset_probdf():
+    def reset_probdf(self):
         """resets probdf to original"""
         self.probdf = self.probdf_reserve
         self.probdf_simple = self.create_simple_probdf()

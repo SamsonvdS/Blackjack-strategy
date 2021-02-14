@@ -12,6 +12,7 @@
     </head>
 
     <body onclick="onClick(event);" ondblclick="onDoubleClick(event);">
+        <input type="hidden" id="number_of_decks" value="{{ number_of_decks }}">
         {% csrf_token %}
         
 
@@ -23,7 +24,7 @@
             <div class="all_suited_cards">
                 {% for heart, value in hearts %}
                     <div class="single_cards">
-                        <input type="number" id="{{ heart.image }}_number" class="card_button_number" min="0" step="1" value="{{ value }}"/>
+                        <input type="number" id="{{ heart.image }}_number" class="card_button_number" step="1" value="{{ value }}"/>
                         <input type="image" id="{{ heart.image }}_image" class="card_button_image" src="/static/cards_jpgs/{{ heart.image }}" alt="{{ heart.image }}">
                     </div>
                 {% endfor %}
@@ -32,7 +33,7 @@
             <div class="all_suited_cards">
                 {% for diamond, value in diamonds %}
                     <div class="single_cards">
-                        <input type="number" id="{{ diamond.image }}_number" class="card_button_number" min="0" step="1" value="{{ value }}"/>
+                        <input type="number" id="{{ diamond.image }}_number" class="card_button_number" step="1" value="{{ value }}"/>
                         <input type="image" id="{{ diamond.image }}_image" class="card_button_image" src="/static/cards_jpgs/{{ diamond.image }}" alt="{{ diamond.image }}">
                     </div>
                 {% endfor %}
@@ -41,7 +42,7 @@
             <div class="all_suited_cards">
             {% for spade, value in spades %}
                 <div class="single_cards">
-                    <input type="number" id="{{ spade.image }}_number" class="card_button_number" min="0" step="1" value="{{ value }}"/>
+                    <input type="number" id="{{ spade.image }}_number" class="card_button_number" step="1" value="{{ value }}"/>
                     <input type="image" id="{{ spade.image }}_image" class="card_button_image" src="/static/cards_jpgs/{{ spade.image }}" alt="{{ spade.image }}">
                 </div>
             {% endfor %}
@@ -50,7 +51,7 @@
             <div class="all_suited_cards">
             {% for club, value in clubs %}
                 <div class="single_cards">
-                    <input type="number" id="{{ club.image }}_number" class="card_button_number" min="0" step="1" value="{{ value }}"/>
+                    <input type="number" id="{{ club.image }}_number" class="card_button_number" step="1" value="{{ value }}"/>
                     <input type="image" id="{{ club.image }}_image" class="card_button_image" src="/static/cards_jpgs/{{ club.image }}" alt="{{ club.image }}">
                 </div>
             {% endfor %}
@@ -62,23 +63,24 @@
             <div class="side_bet_info">
                 <button class="new_shoe">New Shoe</button>
                 <p class="side_bets"><input class="side_bets_ev" id="hot_3" value="{{ ev_hot_3 }}" readonly> Hot 3</p>
-                <p class="side_bets"><input class="side_bets_ev" id="21+3" value="{{ ev_21_plus_3 }}" readonly> 21+3</p>
+                <p class="side_bets"><input class="side_bets_ev" id="21_plus_3" value="{{ ev_21_plus_3 }}" readonly> 21+3</p>
                 <p class="side_bets"><input class="side_bets_ev" id="any_pair" value="{{ ev_any_pair }}" readonly> Any Pair</p>
                 <p class="side_bets"><input class="side_bets_ev" id="bust_it" value="{{ ev_bust_it }}" readonly> Bust It</p>
-                <br><br>
+                <br>
             
                 <button class="new_round">New Round</button>
                 <p class="side_bets"><input class="side_bets_ev" id="insurance" value="{{ ev_insurance }}" readonly> Insurance</p>
             </div>
-            <br><br>
 
             <div class="hand_info">
+                <p class="results"><input class="results_input" id="true_count"> True Count</p>
+                <p class="results"><input class="results_input" id="hand_decision"> Action</p>
+                
                 <button class="calculate_action">Calculate Action</button>
 
                 <button class="undo_dealer">Undo</button>
                 Dealer Hand
                 <p id="dealer_hand"></p>
-                <br>
 
                 <button class="undo_player">Undo</button>
                 <button class="split">Split</button>
@@ -89,7 +91,7 @@
                 <p id="player_split_hand"></p>
             </div>
         </div>
-
+        <div id="empty_space"></div>
     </body>
 </html>
 

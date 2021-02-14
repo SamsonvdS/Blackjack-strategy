@@ -202,4 +202,4 @@ def make_decision(Deckdf, dealer_hand, player_hand):
             action = "stand"
 
 
-    return action, true_count
+    return action.capitalize(), true_count

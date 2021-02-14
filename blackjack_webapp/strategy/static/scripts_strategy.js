@@ -85,11 +85,6 @@ function onClick(element) {
         const image = element.target.alt;
         minus_card(image);
     }
-    else if (element_class === "new_round") {
-        // empty the hand lists
-        dealer_hand.length = 0;
-        player_hand.length = 0;
-    }
     else if (element_class === "undo_dealer") {
         dealer_hand.pop();
     }
@@ -132,39 +127,7 @@ function onClick(element) {
         player_hand = player_split_hand;
         player_split_hand = temp;
     }
-    else if (element_class === "new_round") {
-        // create data dictionary
-        let data = get_card_counts();
-
-        // send data to server
-        fetch(`${current_url}/new_round`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrftoken,
-        },
-        body: JSON.stringify(data)
-        })
-        // turn response into json (dictionary)
-        .then(response => response.json())
-        .then(data => {
-        console.log('Success:', data);
-        })
-
-        // empty dealer and player hands
-        dealer_hand.length = 0;
-        player_hand.length = 0;
-        player_split_hand.length = 0;
-    }
-    else if (element_class === "new_shoe") {
-
-
-
-        dealer_hand.length = 0;
-        player_hand.length = 0;
-        player_split_hand.length = 0;
-    }
-    else if (element_class === "calculate_action") {
+    else if (element_class === "calculate_action" && player_hand.length >= 2) {
         // create data dictionary
         let data = get_card_counts();
         data['player_hand'] = player_hand;
@@ -181,9 +144,94 @@ function onClick(element) {
         })
         // turn response into json (dictionary)
         .then(response => response.json())
+
         .then(data => {
-        console.log('Success:', data);
+            console.log('Success:', data);
+            
+            let element;
+            // adjust ev of insurance and results in html
+            for (var key in data) {
+                element = document.getElementById(key);
+                element.value = data[key];
+            }
+
+            // adjust ev and results colors
+            adjust_ev_colors()
+            adjust_result_colors()
         })
+    }
+    else if (element_class === "new_round") {
+        // create data dictionary
+        let data = get_card_counts();
+
+        // send data to server
+        fetch(`${current_url}/new_round`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+        },
+        body: JSON.stringify(data)
+        })
+
+        // turn response into json (dictionary)
+        .then(response => response.json())
+
+        .then(data => {
+            console.log('Success:', data);
+            
+            let element;
+            // change expected values in html
+            for (var key in data) {
+                element = document.getElementById(key);
+                element.value = data[key];
+            }
+
+            // adjust ev colors
+            adjust_ev_colors()
+        })
+
+        // empty dealer and player hands
+        dealer_hand.length = 0;
+        player_hand.length = 0;
+        player_split_hand.length = 0;
+    }
+    else if (element_class === "new_shoe") {
+        // send data to server
+        fetch(`${current_url}/new_shoe`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+        }})
+
+        // turn response into json (dictionary)
+        .then(response => response.json())
+
+        .then(data => {
+            console.log('Success:', data);
+            
+            let element;
+            // change expected values in html
+            for (var key in data) {
+                element = document.getElementById(key);
+                element.value = data[key];
+            }
+
+            const number_of_decks = document.getElementById('number_of_decks').value;
+            // reset counts of cards
+            document.querySelectorAll('.card_button_number').forEach(function (card_count) {
+                card_count.value = number_of_decks;
+            })
+
+            // adjust ev colors
+            adjust_ev_colors()
+        })
+
+        // empty dealer and player hands
+        dealer_hand.length = 0;
+        player_hand.length = 0;
+        player_split_hand.length = 0;
     }
 
     // display cards
@@ -191,8 +239,15 @@ function onClick(element) {
 }
 
 
+
+
+
+
+
+
+
 /* 
-gets counts for each card
+gets count for each card
 returns dictionary of counts per suit 
 */
 function get_card_counts() {
@@ -220,14 +275,9 @@ function get_card_counts() {
         else if (id.includes('C')) {
             save_counts['Clubs'].push(element.value);
         }
-
     })
-    
     return save_counts
 }
-
-
-
 
 
 /* displays cards in dealer and player hands */
@@ -275,6 +325,31 @@ function adjust_ev_colors() {
         }
         else {
             side_bet.style.backgroundColor = "red";
+        }
+    })
+}
+
+/* changes colors of results */
+function adjust_result_colors() {
+    // for every element with this class change background and text color
+    document.querySelectorAll('.results_input').forEach(function(result) {
+        if (result.value >= 2.5) {
+            result.style.backgroundColor = "green";
+        }
+        else if (result.value < 2.5) {
+            result.style.backgroundColor = "red";
+        }
+        else if (result.value === "Stand") {
+            result.style.backgroundColor = "orangered";
+        }
+        else if (result.value === "Hit") {
+            result.style.backgroundColor = "limegreen";
+        }
+        else if (result.value === "Double") {
+            result.style.backgroundColor = "blue";
+        }
+        else {
+            result.style.backgroundColor = "white";
         }
     })
 }
