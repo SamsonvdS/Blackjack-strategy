@@ -77,6 +77,9 @@ function onDoubleClick(element) {
 decides what will be done, depending on element clicked
 */
 function onClick(element) {
+    // get javascript status element
+    let javascript_status = document.getElementById('javascript_status');
+    
     // get class of element
     const element_class = element.target.className;
 
@@ -128,6 +131,9 @@ function onClick(element) {
         player_split_hand = temp;
     }
     else if (element_class === "calculate_action" && player_hand.length >= 2) {
+        // disable all buttons
+        disable_buttons()
+
         // create data dictionary
         let data = get_card_counts();
         data['player_hand'] = player_hand;
@@ -158,9 +164,16 @@ function onClick(element) {
             // adjust ev and results colors
             adjust_ev_colors()
             adjust_result_colors()
+
+            // activate all buttons
+            activate_buttons()
         })
+        
     }
     else if (element_class === "new_round") {
+        // disable all buttons
+        disable_buttons()
+
         // create data dictionary
         let data = get_card_counts();
 
@@ -189,6 +202,9 @@ function onClick(element) {
 
             // adjust ev colors
             adjust_ev_colors()
+
+            // activate all buttons
+            activate_buttons()
         })
 
         // empty dealer and player hands
@@ -197,6 +213,9 @@ function onClick(element) {
         player_split_hand.length = 0;
     }
     else if (element_class === "new_shoe") {
+        // disable all buttons
+        disable_buttons()
+
         // send data to server
         fetch(`${current_url}/new_shoe`, {
         method: 'POST',
@@ -226,6 +245,9 @@ function onClick(element) {
 
             // adjust ev colors
             adjust_ev_colors()
+
+            // activate all buttons
+            activate_buttons()
         })
 
         // empty dealer and player hands
@@ -242,8 +264,25 @@ function onClick(element) {
 
 
 
+/*
+--------------------------------------------------------
+helper functions
+--------------------------------------------------------
+*/
 
+/* disables all buttons */
+function disable_buttons() {
+    document.querySelectorAll('button').forEach(function(button) {
+        button.disabled = true;
+    })
+}
 
+/* activates all buttons */
+function activate_buttons() {
+    document.querySelectorAll('button').forEach(function(button) {
+        button.disabled = false;
+    })
+}
 
 
 /* 
@@ -258,6 +297,7 @@ function get_card_counts() {
         'Clubs': [],
     };
     let id;
+
     document.querySelectorAll('.card_button_number').forEach(function (element) {
         // get first three characters of id
         id = element.id.substring(0, 3);
@@ -276,6 +316,7 @@ function get_card_counts() {
             save_counts['Clubs'].push(element.value);
         }
     })
+
     return save_counts
 }
 
@@ -283,8 +324,8 @@ function get_card_counts() {
 /* displays cards in dealer and player hands */
 function display_hand_cards() {
     document.getElementById("dealer_hand").innerHTML = dealer_hand;
-    document.getElementById("player_hand").innerHTML = player_hand;
-    document.getElementById("player_split_hand").innerHTML = player_split_hand; 
+    document.getElementById("player_hand").innerHTML = player_hand.toString().replace(/,/g, ' '); // change commas into spaces
+    document.getElementById("player_split_hand").innerHTML = player_split_hand.toString().replace(/,/g, ' ');
 }
 
 
@@ -312,7 +353,12 @@ function plus_card(image) {
     // increase value by one
     let count = counter_element.value;
     count++;
-    counter_element.value = count;
+    
+    // don't increase if value is zero or lower
+    if (!count <= 0) {
+        counter_element.value = count;
+    }
+    
 }
 
 

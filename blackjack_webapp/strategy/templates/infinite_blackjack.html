@@ -59,7 +59,7 @@
         </div>
 
         
-        <div class="column">
+        <div class="column" id="column_2">
             <div class="side_bet_info">
                 <button class="new_shoe">New Shoe</button>
                 <p class="side_bets"><input class="side_bets_ev" id="hot_3" value="{{ ev_hot_3 }}" readonly> Hot 3</p>
@@ -79,16 +79,16 @@
                 <button class="calculate_action">Calculate Action</button>
 
                 <button class="undo_dealer">Undo</button>
-                Dealer Hand
-                <p id="dealer_hand"></p>
+                <p id="dealer_name">Dealer Hand | <span id="dealer_hand"></span> |</p>
+                <br>
 
                 <button class="undo_player">Undo</button>
                 <button class="split">Split</button>
                 <button class="second_hand">Second Hand</button>
-                Player Hand
-                <p id="player_hand"></p>
-                ----------
-                <p id="player_split_hand"></p>
+                <p id="player_name">Player Hand</p>
+                <span id="player_hand"></span>
+                <p>-----------------</p>
+                <span id="player_split_hand"></span>
             </div>
         </div>
         <div id="empty_space"></div>

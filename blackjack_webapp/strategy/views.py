@@ -117,7 +117,7 @@ def infinite_new_round(request):
     
     # convert json ascii string to dictionary
     js_data = ast.literal_eval(request.body.decode('UTF-8'))
-    print(js_data)
+    
     # change numbers from string to int
     Clubs = np.array(js_data['Clubs'], dtype=np.int64)
     Diamonds = np.array(js_data['Diamonds'], dtype=np.int64)

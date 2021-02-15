@@ -1,3 +1,8 @@
+.column {
+    margin-left: 15px;
+    float: left;
+}
+
 
 .card_button_number {
     width: 63px;
@@ -18,9 +23,8 @@
 }
 
 
-.column {
-    margin-left: 15px;
-    float: left;
+#column_2 {
+    width: 125px;
 }
 .side_bets_ev {
     width: 50px;
@@ -49,11 +53,12 @@
 
 .undo_dealer {
     display: block;
+}
+#dealer_name {
+    margin-top: 5px;
     margin-bottom: 5px;
 }
-#dealer_hand {
-    margin-top: 2px;
-}
+
 
 .undo_player {
     display: inline-block;
@@ -65,6 +70,10 @@
 }
 .second_hand {
     display: block;
+    margin-bottom: 5px;
+}
+#player_name {
+    margin-top: 5px;
     margin-bottom: 5px;
 }
 #player_hand {
