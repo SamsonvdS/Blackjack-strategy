@@ -1,3 +1,4 @@
+import math
 import pandas as pd
 
 """
@@ -18,6 +19,39 @@ The rules are as follows:
 * Blackjack pays 1.5 units
 * Push when hands tie
 """
+
+
+def kelly(bet_percentage, edge):
+    """this is the function to maximize for kelly criterion"""
+    # assume winning and losing probabilities are constant, only BJ probability changes, so payout changes
+    win = 0.46233
+    lose = 0.53767
+
+    return 0.53767 * math.log(1 - bet_percentage) + \
+              0.46233 * math.log(1 + (edge + lose)/win * bet_percentage)
+
+
+def optimize_kelly(edge, lower=0, upper=1):
+    """
+    finds optimal kelly by starting in the middle of the range,
+    and then it halves the data into the part that includes the solution
+    basically like quicksort sorting algorithm
+    with 9 decimals it is accurate enough for a €100.000.000 bankroll
+    """
+    # precision of optimization
+    decimals = 9
+    increments = float(f'1e-0{decimals - 1}')
+    
+    while (upper - lower) > increments:
+        start = round((upper - lower) / 2 + lower, decimals)
+        start_plus_one = start + increments
+        
+        if kelly(start, edge) >= kelly(start_plus_one, edge):
+            upper = round(start, decimals)
+        else:
+            lower = round(start_plus_one, decimals)
+        
+    return lower
 
 
 def make_decision(Deckdf, dealer_hand, player_hand):
@@ -202,4 +236,10 @@ def make_decision(Deckdf, dealer_hand, player_hand):
             action = "stand"
 
 
-    return action.capitalize(), true_count
+    # estimate edge
+    avg_house_edge = 0.0065
+    edge = true_count * 0.0025 - avg_house_edge
+
+    optimal_bet_percentage = optimize_kelly(edge)
+
+    return action.capitalize(), true_count, optimal_bet_percentage

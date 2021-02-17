@@ -17,6 +17,41 @@ You win with this side bet if your first two cards and the dealer's open card ar
 """
 
 
+def kelly(bet_percentage, prob_dict, payout_dict):
+    """maximizes function for kelly criterion"""
+    return prob_dict['prob_losing_combi'] * math.log(1 - bet_percentage) + \
+            prob_dict['prob_flush'] * math.log(1 + payout_dict['flush_payout'] * bet_percentage) + \
+            prob_dict['prob_straight'] * math.log(1 + payout_dict['straight_payout'] * bet_percentage) + \
+            prob_dict['prob_three_of_a_kind'] * math.log(1 + payout_dict['three_of_a_kind_payout'] * bet_percentage) + \
+            prob_dict['prob_straight_flush'] * math.log(1 + payout_dict['straight_flush_payout'] * bet_percentage) + \
+            prob_dict['prob_suited_trips'] * math.log(1 + payout_dict['suited_trips_payout'] * bet_percentage)
+
+
+def optimize_kelly(prob_dict, payout_dict, lower=0, upper=1):
+        """
+        finds optimal kelly
+        basically acts like quicksort sorting algorithm
+        with 9 decimals it is accurate enough for a €100.000.000 bankroll
+        returns lower boundary of the range of the optimization
+        """
+        # precision of optimization
+        decimals = 9
+        increments = float(f'1e-0{decimals - 1}')
+        
+        # maximize
+        while (upper - lower) > increments:
+            # get two values in middle of range
+            start = round((upper - lower) / 2 + lower, decimals)
+            start_plus_one = start + increments
+            
+            if kelly(start, prob_dict, payout_dict) >= kelly(start_plus_one, prob_dict, payout_dict):
+                upper = round(start, decimals)
+            else:
+                lower = round(start_plus_one, decimals)
+            
+        return lower
+
+
 def calculate_probabilities(Deckdf, probdf):
     """
     calculates the probabilities for each outcome of the 21+3 bet
@@ -29,7 +64,6 @@ def calculate_probabilities(Deckdf, probdf):
     cards_sequences = [['2', '3', '4'], ['3', '4', '5'], ['4', '5', '6'], ['5', '6', '7'], 
                     ['6', '7', '8'], ['7', '8', '9'], ['8', '9', '10'], ['9', '10', 'J'],  
                     ['10', 'J', 'Q'], ['J', 'Q', 'K'], ['Q', 'K', 'A'], ['A', '2', '3']]
-
 
 
     # total number of combinations of three the same cards
@@ -71,7 +105,9 @@ def calculate_probabilities(Deckdf, probdf):
 
 
 def calculate_ev(Deckdf):
-    """calculate and return expected value of 21+3 bet"""
+    """
+    calculates and returns expected value of 21+3 bet and optimal bet 
+    """
     # copy probdf so it doesn't interfere with other scripts
     probdf = Deckdf.probdf.copy()
 
@@ -90,7 +126,7 @@ def calculate_ev(Deckdf):
     prob_straight = sum(probdf.Straight) / total_combinations
     prob_flush = sum(probdf.Flush) / total_combinations
     prob_losing_combi = 1 - prob_flush - prob_straight - prob_three_of_a_kind - prob_straight_flush - prob_suited_trips
-
+    
 
     # payouts
     suited_trips_payout = 100
@@ -109,4 +145,25 @@ def calculate_ev(Deckdf):
 
     total_ev = return_suited_trips + return_straight_flush + return_three_of_a_kind + return_straight + return_flush + return_losing_combi
 
-    return total_ev
+
+    # save probabilities and payouts
+    prob_dict = {
+        'prob_losing_combi': prob_losing_combi,
+        'prob_flush': prob_flush,
+        'prob_straight': prob_straight,
+        'prob_three_of_a_kind': prob_three_of_a_kind,
+        'prob_straight_flush': prob_straight_flush,
+        'prob_suited_trips': prob_suited_trips,
+    }
+    payout_dict = {
+        'suited_trips_payout': suited_trips_payout,
+        'flush_payout': flush_payout,
+        'straight_payout': straight_payout,
+        'three_of_a_kind_payout': three_of_a_kind_payout,
+        'straight_flush_payout': straight_flush_payout,
+    }
+
+    # find optimal bet percentage
+    optimal_bet_percentage = optimize_kelly(prob_dict, payout_dict)
+
+    return total_ev, optimal_bet_percentage

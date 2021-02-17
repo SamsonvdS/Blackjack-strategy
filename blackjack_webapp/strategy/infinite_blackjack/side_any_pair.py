@@ -13,6 +13,38 @@ The goal is to receive a pair in the first two cards that you are dealt
 """
 
 
+def kelly(bet_percentage, prob_dict, payout_dict):
+    """maximizes function for kelly criterion"""
+    return prob_dict['prob_losing_pair'] * math.log(1 - bet_percentage) + \
+            prob_dict['prob_unsuited_pair'] * math.log(1 + payout_dict['unsuited_pair_payout'] * bet_percentage) + \
+            prob_dict['prob_suited_pair'] * math.log(1 + payout_dict['suited_pair_payout'] * bet_percentage) 
+
+
+def optimize_kelly(prob_dict, payout_dict, lower=0, upper=1):
+        """
+        finds optimal kelly
+        basically acts like quicksort sorting algorithm
+        with 9 decimals it is accurate enough for a €100.000.000 bankroll
+        returns lower boundary of the range of the optimization
+        """
+        # precision of optimization
+        decimals = 9
+        increments = float(f'1e-0{decimals - 1}')
+        
+        # maximize
+        while (upper - lower) > increments:
+            # get two values in middle of range
+            start = round((upper - lower) / 2 + lower, decimals)
+            start_plus_one = start + increments
+            
+            if kelly(start, prob_dict, payout_dict) >= kelly(start_plus_one, prob_dict, payout_dict):
+                upper = round(start, decimals)
+            else:
+                lower = round(start_plus_one, decimals)
+            
+        return lower
+
+
 def calculate_ev(Deckdf):
     """
     calculates the probabilities of each outcome for the any pair side bet
@@ -48,8 +80,8 @@ def calculate_ev(Deckdf):
     prob_losing_pair = 1 - prob_suited_pair - prob_unsuited_pair
 
 
-    suited_pair_payout = 25
     unsuited_pair_payout = 8
+    suited_pair_payout = 25
 
     return_suited_pair = prob_suited_pair * suited_pair_payout
     return_unsuited_pair = prob_unsuited_pair * unsuited_pair_payout
@@ -57,4 +89,19 @@ def calculate_ev(Deckdf):
 
     total_ev = return_suited_pair + return_unsuited_pair + return_losing_pair
 
-    return total_ev
+
+    # save probabilities and payouts
+    prob_dict = {
+        'prob_losing_pair': prob_losing_pair,
+        'prob_unsuited_pair': prob_unsuited_pair,
+        'prob_suited_pair': prob_suited_pair,
+    }
+    payout_dict = {
+        'unsuited_pair_payout': unsuited_pair_payout,
+        'suited_pair_payout': suited_pair_payout,
+    }
+
+    # find optimal bet percentage
+    optimal_bet_percentage = optimize_kelly(prob_dict, payout_dict)
+
+    return total_ev, optimal_bet_percentage

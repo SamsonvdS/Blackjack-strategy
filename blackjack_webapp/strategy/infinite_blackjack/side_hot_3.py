@@ -16,6 +16,41 @@ You win with this side bet if your first two cards and the dealer's open card ar
 """
 
 
+def kelly(bet_percentage, prob_dict, payout_dict):
+    """maximizes function for kelly criterion"""
+    return prob_dict['prob_losing_combos'] * math.log(1 - bet_percentage) + \
+            prob_dict['prob_triple_7'] * math.log(1 + payout_dict['triple_7_payout'] * bet_percentage) + \
+            prob_dict['prob_suited_21'] * math.log(1 + payout_dict['suited_21_payout'] * bet_percentage) + \
+            prob_dict['prob_unsuited_21'] * math.log(1 + payout_dict['unsuited_21_payout'] * bet_percentage) + \
+            prob_dict['prob_all_20'] * math.log(1 + payout_dict['all_20_payout'] * bet_percentage) + \
+            prob_dict['prob_all_19'] * math.log(1 + payout_dict['all_19_payout'] * bet_percentage)
+
+
+def optimize_kelly(prob_dict, payout_dict, lower=0, upper=1):
+        """
+        finds optimal kelly
+        basically acts like quicksort sorting algorithm
+        with 9 decimals it is accurate enough for a €100.000.000 bankroll
+        returns lower boundary of the range of the optimization
+        """
+        # precision of optimization
+        decimals = 9
+        increments = float(f'1e-0{decimals - 1}')
+        
+        # maximize
+        while (upper - lower) > increments:
+            # get two values in middle of range
+            start = round((upper - lower) / 2 + lower, decimals)
+            start_plus_one = start + increments
+            
+            if kelly(start, prob_dict, payout_dict) >= kelly(start_plus_one, prob_dict, payout_dict):
+                upper = round(start, decimals)
+            else:
+                lower = round(start_plus_one, decimals)
+            
+        return lower
+
+
 def get_all_combinations():
     """this part finds all card combinations that add up to 19, 20, 21"""
     # values of cards in the deck
@@ -161,4 +196,25 @@ def calculate_ev(Deckdf):
 
     total_ev = return_triple_7 + return_suited_21 + return_unsuited_21 + return_all_20 + return_all_19 + return_losing_combos
 
-    return total_ev
+
+    # save probabilities and payouts
+    prob_dict = {
+        'prob_triple_7': prob_triple_7,
+        'prob_suited_21': prob_suited_21,
+        'prob_unsuited_21': prob_unsuited_21,
+        'prob_all_20': prob_all_20,
+        'prob_all_19': prob_all_19,
+        'prob_losing_combos': prob_losing_combos,
+    }
+    payout_dict = {
+        'triple_7_payout': triple_7_payout,
+        'suited_21_payout': suited_21_payout,
+        'unsuited_21_payout': unsuited_21_payout,
+        'all_20_payout': all_20_payout,
+        'all_19_payout': all_19_payout,
+    }
+
+    # find optimal bet percentage
+    optimal_bet_percentage = optimize_kelly(prob_dict, payout_dict)
+
+    return total_ev, optimal_bet_percentage
