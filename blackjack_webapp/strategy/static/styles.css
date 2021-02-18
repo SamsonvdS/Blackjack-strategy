@@ -35,6 +35,13 @@
 .side_bets {
     display: block;
 }
+.kelly_pct {
+    width: 50px;
+    border-width: 1px;
+    color: white;
+    background-color: red;
+}
+
 
 
 .results_input {
@@ -45,7 +52,10 @@
 .results {
     display: block;
 }
-
+#kelly_pct_hand_decision {
+    width: 40px;
+    background-color: white;
+}
 
 .calculate_action {
     margin-bottom: 30px;

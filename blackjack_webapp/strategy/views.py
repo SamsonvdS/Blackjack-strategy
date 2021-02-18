@@ -41,7 +41,10 @@ def infinite_blackjack(request):
     """for first load of infinite blackjack page"""
     # calculate ev for bets
     ev_insurance = calculate_insurance(deckdf)
-    ev_hot_3, ev_21_plus_3, ev_any_pair, ev_bust_it = calculate_side_bets(deckdf)
+    side_bets = calculate_side_bets(deckdf)
+
+    ev_hot_3, ev_21_plus_3, ev_any_pair, ev_bust_it = side_bets[0]
+    kelly_pct_hot_3, kelly_pct_21_plus_3, kelly_pct_any_pair, kelly_pct_bust_it = side_bets[1]
 
     # turn dataframe into dictionary with lists per suit
     probdf_dict = deckdf.probdf.to_dict('list')
@@ -60,6 +63,10 @@ def infinite_blackjack(request):
         'ev_21_plus_3': f'{ev_21_plus_3:.4f}',
         'ev_any_pair': f'{ev_any_pair:.4f}',
         'ev_bust_it': f'{ev_bust_it:.4f}',
+        'kelly_pct_hot_3': kelly_pct_hot_3,
+        'kelly_pct_21_plus_3': kelly_pct_21_plus_3,
+        'kelly_pct_any_pair': kelly_pct_any_pair,
+        'kelly_pct_bust_it': kelly_pct_bust_it,
     })
 
 
@@ -98,13 +105,14 @@ def infinite_calculate_hand(request):
 
     # calculate player's decision and ev of insurance
     ev_insurance = calculate_insurance(deckdf)
-    hand_decision = how_to_play_hand(deckdf, dealer_hand, player_hand)
+    hand_decision, true_count, kelly_pct = how_to_play_hand(deckdf, dealer_hand, player_hand)
     
     # turn data into json
     json_data = json.dumps({
-        'hand_decision': hand_decision[0],
-        'true_count': f'{hand_decision[1]:.1f}',
+        'hand_decision': hand_decision,
+        'true_count': f'{true_count:.1f}',
         'insurance': f'{ev_insurance:.4f}',
+        'kelly_pct_hand_decision': kelly_pct,
     })
     return HttpResponse(json_data)
 
@@ -114,7 +122,6 @@ def infinite_new_round(request):
     calculates ev of all side bets
     returns json object
     """
-    
     # convert json ascii string to dictionary
     js_data = ast.literal_eval(request.body.decode('UTF-8'))
     
@@ -129,7 +136,11 @@ def infinite_new_round(request):
 
     # calculate ev for bets
     ev_insurance = calculate_insurance(deckdf)
-    ev_hot_3, ev_21_plus_3, ev_any_pair, ev_bust_it = calculate_side_bets(deckdf)
+    side_bets = calculate_side_bets(deckdf)
+
+    # get expected values and optimal bet percentages (kelly criterion)
+    ev_hot_3, ev_21_plus_3, ev_any_pair, ev_bust_it = side_bets[0]
+    kelly_pct_hot_3, kelly_pct_21_plus_3, kelly_pct_any_pair, kelly_pct_bust_it = side_bets[1]
 
     # turn data into json
     json_data = json.dumps({
@@ -138,6 +149,10 @@ def infinite_new_round(request):
         'any_pair': f'{ev_any_pair:.4f}',
         'bust_it': f'{ev_bust_it:.4f}',
         'insurance': f'{ev_insurance:.4f}',
+        'kelly_pct_hot_3': kelly_pct_hot_3,
+        'kelly_pct_21_plus_3': kelly_pct_21_plus_3,
+        'kelly_pct_any_pair': kelly_pct_any_pair,
+        'kelly_pct_bust_it': kelly_pct_bust_it,
     })
     return HttpResponse(json_data)
 
@@ -152,8 +167,12 @@ def infinite_new_shoe(request):
 
     # calculate ev for bets
     ev_insurance = calculate_insurance(deckdf)
-    ev_hot_3, ev_21_plus_3, ev_any_pair, ev_bust_it = calculate_side_bets(deckdf)
-  
+    side_bets = calculate_side_bets(deckdf)
+
+    # get expected values and optimal bet percentages (kelly criterion)
+    ev_hot_3, ev_21_plus_3, ev_any_pair, ev_bust_it = side_bets[0]
+    kelly_pct_hot_3, kelly_pct_21_plus_3, kelly_pct_any_pair, kelly_pct_bust_it = side_bets[1]
+
     # turn data into json
     json_data = json.dumps({
         'hot_3': f'{ev_hot_3:.4f}',
@@ -161,6 +180,10 @@ def infinite_new_shoe(request):
         'any_pair': f'{ev_any_pair:.4f}',
         'bust_it': f'{ev_bust_it:.4f}',
         'insurance': f'{ev_insurance:.4f}',
+        'kelly_pct_hot_3': kelly_pct_hot_3,
+        'kelly_pct_21_plus_3': kelly_pct_21_plus_3,
+        'kelly_pct_any_pair': kelly_pct_any_pair,
+        'kelly_pct_bust_it': kelly_pct_bust_it,
     })
     return HttpResponse(json_data)
 

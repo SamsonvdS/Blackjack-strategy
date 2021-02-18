@@ -25,18 +25,18 @@ var player_split_hand = [];
 /* 
 registers card to dealer and/or player hand
 */
-function onDoubleClick(element) {
-    // correct the double substraction of card count
-    const image = element.target.alt;
-    plus_card(image);
-
+function onRightClick(element) {
     // get class of element
     const element_class = element.target.className
 
     // only do this if double click was on card image button
     if (element_class === "card_button_image") {
-        // skip the .jpg part
         let card = element.target.alt;
+
+        // decrease count
+        minus_card(card);
+
+        // skip the .jpg part
         card = card.substring(0, card.length - 4);
         
         const value = card.substring(0, card.length - 1);
@@ -69,6 +69,9 @@ function onDoubleClick(element) {
         
         // display cards
         display_hand_cards()
+
+        // prevent showing menu
+        element.preventDefault()
     }
 }
 
@@ -77,9 +80,6 @@ function onDoubleClick(element) {
 decides what will be done, depending on element clicked
 */
 function onClick(element) {
-    // get javascript status element
-    let javascript_status = document.getElementById('javascript_status');
-    
     // get class of element
     const element_class = element.target.className;
 
@@ -152,8 +152,6 @@ function onClick(element) {
         .then(response => response.json())
 
         .then(data => {
-            console.log('Success:', data);
-            
             let element;
             // adjust ev of insurance and results in html
             for (var key in data) {
@@ -191,8 +189,6 @@ function onClick(element) {
         .then(response => response.json())
 
         .then(data => {
-            console.log('Success:', data);
-            
             let element;
             // change expected values in html
             for (var key in data) {
@@ -228,8 +224,6 @@ function onClick(element) {
         .then(response => response.json())
 
         .then(data => {
-            console.log('Success:', data);
-            
             let element;
             // change expected values in html
             for (var key in data) {
@@ -336,35 +330,18 @@ function minus_card(image) {
 
     // decrease value by one
     let count = counter_element.value;
-    count--;
-
+  
     // minimum count is zero
     if (count >= 0) {
+        count--;
         counter_element.value = count;
     }
-}
-
-
-/* adds one count to the counter element from a specific card */
-function plus_card(image) {
-    // get specific counter element
-    const counter_element = document.getElementById(image + "_number");
-
-    // increase value by one
-    let count = counter_element.value;
-    count++;
-    
-    // don't increase if value is zero or lower
-    if (!count <= 0) {
-        counter_element.value = count;
-    }
-    
 }
 
 
 /* changes color to green if ev is positive, otherwise red */
 function adjust_ev_colors() {
-    // for every element with this class change background and text color
+    // for every element with side_bets_ev class change background and text color
     document.querySelectorAll('.side_bets_ev').forEach(function(side_bet) {
         if (side_bet.value > 0) {
             side_bet.style.backgroundColor = "green";
@@ -373,16 +350,27 @@ function adjust_ev_colors() {
             side_bet.style.backgroundColor = "red";
         }
     })
+
+    // for every element with kelly_pct class change background and text color
+    document.querySelectorAll('.kelly_pct').forEach(function(side_bet) {
+        if (side_bet.value > 0) {
+            side_bet.style.backgroundColor = "green";
+        }
+        else {
+            side_bet.style.backgroundColor = "red";
+        }
+    })
+
 }
 
 /* changes colors of results */
 function adjust_result_colors() {
     // for every element with this class change background and text color
     document.querySelectorAll('.results_input').forEach(function(result) {
-        if (result.value >= 2.5) {
+        if (result.value >= 2.6) {
             result.style.backgroundColor = "green";
         }
-        else if (result.value < 2.5) {
+        else if (result.value < 2.6) {
             result.style.backgroundColor = "red";
         }
         else if (result.value === "Stand") {

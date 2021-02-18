@@ -38,20 +38,27 @@ def order_cards():
     
 def how_to_play_hand(Deckdf, dealer_hand, player_hand):
     """returns how to play your hand against the dealer's open_card"""
-    return make_decision(Deckdf, dealer_hand, player_hand)
+    hand_decision, true_count, kelly_pct = make_decision(Deckdf, dealer_hand, player_hand)
+    return hand_decision, true_count, kelly_pct
 
 def calculate_insurance(Deckdf):
     """calculates the expected value of taking insurance"""
     return calculate_ev_insurance(Deckdf)
 
 def calculate_side_bets(Deckdf):
-    """calculates the expected values of the side bets"""
-    ev_hot_3 = calculate_ev_hot_3(Deckdf)
-    ev_21_plus_3 = calculate_ev_21_plus_3(Deckdf)
-    ev_any_pair = calculate_ev_any_pair(Deckdf)
-    ev_bust_it = calculate_ev_bust_it(Deckdf)
+    """
+    calculates the expected values and optimal bet percentages of the side bets
+    returns list of expected values and optimal bets
+    """
+    ev_hot_3, kelly_pct_hot_3 = calculate_ev_hot_3(Deckdf)
+    ev_21_plus_3, kelly_pct_21_plus_3 = calculate_ev_21_plus_3(Deckdf)
+    ev_any_pair, kelly_pct_any_pair = calculate_ev_any_pair(Deckdf)
+    ev_bust_it, kelly_pct_bust_it = calculate_ev_bust_it(Deckdf)
 
-    return ev_hot_3, ev_21_plus_3, ev_any_pair, ev_bust_it
+    expected_values = [ev_hot_3, ev_21_plus_3, ev_any_pair, ev_bust_it]
+    kelly_pct = [kelly_pct_hot_3, kelly_pct_21_plus_3, kelly_pct_any_pair, kelly_pct_bust_it]
+
+    return expected_values, kelly_pct
 
 
 

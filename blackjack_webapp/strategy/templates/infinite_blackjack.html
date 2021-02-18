@@ -9,7 +9,7 @@
         <script src="{% static 'scripts_strategy.js' %}"></script> 
     </head>
 
-    <body onclick="onClick(event);" ondblclick="onDoubleClick(event);">
+    <body onclick="onClick(event);" oncontextmenu="onRightClick(event);">
         <input type="hidden" id="number_of_decks" value="{{ number_of_decks }}">
         {% csrf_token %}
         
@@ -60,10 +60,22 @@
         <div class="column" id="column_2">
             <div class="side_bet_info">
                 <button class="new_shoe">New Shoe</button>
-                <p class="side_bets"><input class="side_bets_ev" id="hot_3" value="{{ ev_hot_3 }}" readonly> Hot 3</p>
-                <p class="side_bets"><input class="side_bets_ev" id="21_plus_3" value="{{ ev_21_plus_3 }}" readonly> 21+3</p>
-                <p class="side_bets"><input class="side_bets_ev" id="any_pair" value="{{ ev_any_pair }}" readonly> Any Pair</p>
-                <p class="side_bets"><input class="side_bets_ev" id="bust_it" value="{{ ev_bust_it }}" readonly> Bust It</p>
+                <p class="side_bets">
+                    <input class="side_bets_ev" id="hot_3" value="{{ ev_hot_3 }}" readonly> Hot 3
+                    <input class="kelly_pct" id="kelly_pct_hot_3" value="{{ kelly_pct_hot_3 }}" readonly>
+                </p>
+                <p class="side_bets">
+                    <input class="side_bets_ev" id="21_plus_3" value="{{ ev_21_plus_3 }}" readonly> 21+3
+                    <input class="kelly_pct" id="kelly_pct_21_plus_3" value="{{ kelly_pct_21_plus_3 }}" readonly>
+                </p>
+                <p class="side_bets">
+                    <input class="side_bets_ev" id="any_pair" value="{{ ev_any_pair }}" readonly> Any Pair
+                    <input class="kelly_pct" id="kelly_pct_any_pair" value="{{ kelly_pct_any_pair }}" readonly>
+                </p>
+                <p class="side_bets">
+                    <input class="side_bets_ev" id="bust_it" value="{{ ev_bust_it }}" readonly> Bust It
+                    <input class="kelly_pct" id="kelly_pct_bust_it" value="{{ kelly_pct_bust_it }}" readonly>
+                </p>
                 <br>
             
                 <button class="new_round">New Round</button>
@@ -71,13 +83,15 @@
             </div>
 
             <div class="hand_info">
-                <p class="results"><input class="results_input" id="true_count"> True Count</p>
+                <p class="results">
+                    <input class="results_input" id="true_count"> True Count
+                    <input class="kelly_pct" id="kelly_pct_hand_decision"> EV</p>
                 <p class="results"><input class="results_input" id="hand_decision"> Action</p>
                 
                 <button class="calculate_action">Calculate Action</button>
 
                 <button class="undo_dealer">Undo</button>
-                <p id="dealer_name">Dealer Hand | <span id="dealer_hand"></span> |</p>
+                <p id="dealer_name">Dealer Hand | <span id="dealer_hand"></span></p>
                 <br>
 
                 <button class="undo_player">Undo</button>

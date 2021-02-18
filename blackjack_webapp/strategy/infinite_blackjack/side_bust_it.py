@@ -242,9 +242,10 @@ def calculate_ev(Deckdf):
         for prob in card:
             total_prob += card[prob]
         
-        # rescale
-        for prob in card:
-            card[prob] /= total_prob
+        # rescale as long as total_prob > 0
+        if total_prob:
+            for prob in card:
+                card[prob] /= total_prob
             
 
 
