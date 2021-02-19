@@ -130,7 +130,7 @@ function onClick(element) {
         player_hand = player_split_hand;
         player_split_hand = temp;
     }
-    else if (element_class === "calculate_action" && player_hand.length >= 2) {
+    else if (element_class === "calculate_action") {
         // disable all buttons
         disable_buttons()
 
@@ -138,6 +138,7 @@ function onClick(element) {
         let data = get_card_counts();
         data['player_hand'] = player_hand;
         data['dealer_hand'] = dealer_hand;
+        data['bankroll'] = document.getElementById('bankroll').value;
 
         // send data to server
         fetch(`${current_url}/calculate_hand`, {
@@ -157,6 +158,8 @@ function onClick(element) {
             for (var key in data) {
                 element = document.getElementById(key);
                 element.value = data[key];
+                console.log('ele', element)
+                console.log("value", element.value, data[key])
             }
 
             // adjust ev and results colors
@@ -166,7 +169,6 @@ function onClick(element) {
             // activate all buttons
             activate_buttons()
         })
-        
     }
     else if (element_class === "new_round") {
         // disable all buttons
@@ -174,6 +176,7 @@ function onClick(element) {
 
         // create data dictionary
         let data = get_card_counts();
+        data['bankroll'] = document.getElementById('bankroll').value;
 
         // send data to server
         fetch(`${current_url}/new_round`, {
@@ -201,16 +204,19 @@ function onClick(element) {
 
             // activate all buttons
             activate_buttons()
-        })
 
-        // empty dealer and player hands
-        dealer_hand.length = 0;
-        player_hand.length = 0;
-        player_split_hand.length = 0;
+            // empty dealer and player hands
+            dealer_hand.length = 0;
+            player_hand.length = 0;
+            player_split_hand.length = 0;
+        })
     }
     else if (element_class === "new_shoe") {
         // disable all buttons
         disable_buttons()
+        data = {
+            'bankroll': document.getElementById('bankroll').value,
+        }
 
         // send data to server
         fetch(`${current_url}/new_shoe`, {
@@ -218,7 +224,9 @@ function onClick(element) {
         headers: {
             'Content-Type': 'application/json',
             'X-CSRFToken': csrftoken,
-        }})
+        },
+        body: JSON.stringify(data)
+        })
 
         // turn response into json (dictionary)
         .then(response => response.json())
@@ -242,12 +250,12 @@ function onClick(element) {
 
             // activate all buttons
             activate_buttons()
-        })
 
-        // empty dealer and player hands
-        dealer_hand.length = 0;
-        player_hand.length = 0;
-        player_split_hand.length = 0;
+            // empty dealer and player hands
+            dealer_hand.length = 0;
+            player_hand.length = 0;
+            player_split_hand.length = 0;
+        })
     }
 
     // display cards
@@ -332,7 +340,7 @@ function minus_card(image) {
     let count = counter_element.value;
   
     // minimum count is zero
-    if (count >= 0) {
+    if (count > 0) {
         count--;
         counter_element.value = count;
     }
@@ -341,23 +349,33 @@ function minus_card(image) {
 
 /* changes color to green if ev is positive, otherwise red */
 function adjust_ev_colors() {
-    // for every element with side_bets_ev class change background and text color
+    // for every element with side_bets_ev class change background
     document.querySelectorAll('.side_bets_ev').forEach(function(side_bet) {
         if (side_bet.value > 0) {
-            side_bet.style.backgroundColor = "green";
+            side_bet.style.backgroundColor = "forestgreen";
         }
         else {
             side_bet.style.backgroundColor = "red";
         }
     })
 
-    // for every element with kelly_pct class change background and text color
-    document.querySelectorAll('.kelly_pct').forEach(function(side_bet) {
-        if (side_bet.value > 0) {
-            side_bet.style.backgroundColor = "green";
+    // for every element with kelly_pct class change background
+    document.querySelectorAll('.kelly_pct').forEach(function(kelly_pct) {
+        if (kelly_pct.value > 0) {
+            kelly_pct.style.backgroundColor = "forestgreen";
         }
         else {
-            side_bet.style.backgroundColor = "red";
+            kelly_pct.style.backgroundColor = "red";
+        }
+    })
+
+    // for every element with optimal_bet class change background
+    document.querySelectorAll('.optimal_bet').forEach(function(optimal_bet) {
+        if (optimal_bet.value > 0) {
+            optimal_bet.style.backgroundColor = "darkgreen";
+        }
+        else {
+            optimal_bet.style.backgroundColor = "red";
         }
     })
 
@@ -365,25 +383,48 @@ function adjust_ev_colors() {
 
 /* changes colors of results */
 function adjust_result_colors() {
-    // for every element with this class change background and text color
+    // for every element with results_input class change background
     document.querySelectorAll('.results_input').forEach(function(result) {
-        if (result.value >= 2.6) {
-            result.style.backgroundColor = "green";
+        if (result.id === "true_count") {
+            if (result.value >= 2.6) {
+                result.style.backgroundColor = "forestgreen";
+            }
+            else if (result.value < 2.6) {
+                result.style.backgroundColor = "red";
+            }
+            else {
+                result.style.backgroundColor = "white";
+            }
         }
-        else if (result.value < 2.6) {
-            result.style.backgroundColor = "red";
+        else if (result.id === "hand_decision") {
+            if (result.value === "Stand") {
+                result.style.backgroundColor = "yellow";
+            }
+            else if (result.value === "Hit") {
+                result.style.backgroundColor = "tomato";
+            }
+            else if (result.value.includes('Double')) {
+                result.style.backgroundColor = "dodgerblue";
+            }
+            else if (result.value === "Split") {
+                result.style.backgroundColor = "limegreen";
+            }
+            else {
+                result.style.backgroundColor = "white";
+                result.value = "";
+            }
         }
-        else if (result.value === "Stand") {
-            result.style.backgroundColor = "orangered";
-        }
-        else if (result.value === "Hit") {
-            result.style.backgroundColor = "limegreen";
-        }
-        else if (result.value === "Double") {
-            result.style.backgroundColor = "blue";
-        }
+        // change color of kelly_pct and optimal_bet for true count
         else {
-            result.style.backgroundColor = "white";
+            if (result.value > 0) {
+                result.style.backgroundColor = "forestgreen";
+            }
+            else if (result.value <= 0) {
+                result.style.backgroundColor = "red";
+            }
+            else {
+                result.style.backgroundColor = "white";
+            }
         }
     })
 }

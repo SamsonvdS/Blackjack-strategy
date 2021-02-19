@@ -87,6 +87,9 @@ def infinite_calculate_hand(request):
     # convert json ascii string to dictionary
     js_data = ast.literal_eval(request.body.decode('UTF-8'))
     
+    # get bankroll value
+    bankroll = int(js_data['bankroll'])
+
     # change numbers from string to int
     Clubs = np.array(js_data['Clubs'], dtype=np.int64)
     Diamonds = np.array(js_data['Diamonds'], dtype=np.int64)
@@ -107,12 +110,16 @@ def infinite_calculate_hand(request):
     ev_insurance = calculate_insurance(deckdf)
     hand_decision, true_count, kelly_pct = how_to_play_hand(deckdf, dealer_hand, player_hand)
     
+    # fractional kelly
+    fraction_kelly = 0.8
+
     # turn data into json
     json_data = json.dumps({
         'hand_decision': hand_decision,
         'true_count': f'{true_count:.1f}',
         'insurance': f'{ev_insurance:.4f}',
         'kelly_pct_hand_decision': kelly_pct,
+        'optimal_bet_hand_decision':round(bankroll * kelly_pct * fraction_kelly, 2),
     })
     return HttpResponse(json_data)
 
@@ -125,6 +132,9 @@ def infinite_new_round(request):
     # convert json ascii string to dictionary
     js_data = ast.literal_eval(request.body.decode('UTF-8'))
     
+    # get bankroll value
+    bankroll = int(js_data['bankroll'])
+
     # change numbers from string to int
     Clubs = np.array(js_data['Clubs'], dtype=np.int64)
     Diamonds = np.array(js_data['Diamonds'], dtype=np.int64)
@@ -142,6 +152,9 @@ def infinite_new_round(request):
     ev_hot_3, ev_21_plus_3, ev_any_pair, ev_bust_it = side_bets[0]
     kelly_pct_hot_3, kelly_pct_21_plus_3, kelly_pct_any_pair, kelly_pct_bust_it = side_bets[1]
 
+    # fractional kelly
+    fraction_kelly = 0.8
+
     # turn data into json
     json_data = json.dumps({
         'hot_3': f'{ev_hot_3:.4f}',
@@ -153,6 +166,10 @@ def infinite_new_round(request):
         'kelly_pct_21_plus_3': kelly_pct_21_plus_3,
         'kelly_pct_any_pair': kelly_pct_any_pair,
         'kelly_pct_bust_it': kelly_pct_bust_it,
+        'optimal_bet_hot_3':round(bankroll * kelly_pct_hot_3 * fraction_kelly, 2),
+        'optimal_bet_21_plus_3':round(bankroll * kelly_pct_21_plus_3 * fraction_kelly, 2),
+        'optimal_bet_any_pair':round(bankroll * kelly_pct_any_pair * fraction_kelly, 2),
+        'optimal_bet_bust_it':round(bankroll * kelly_pct_bust_it * fraction_kelly, 2),
     })
     return HttpResponse(json_data)
 
@@ -162,6 +179,12 @@ def infinite_new_shoe(request):
     resets everything and recalculates ev of side bets
     returns json object
     """
+    # convert json ascii string to dictionary
+    js_data = ast.literal_eval(request.body.decode('UTF-8'))
+
+    # get bankroll value
+    bankroll = int(js_data['bankroll'])
+
     # reset deckdf
     deckdf.reset_probdf()
 
@@ -173,6 +196,9 @@ def infinite_new_shoe(request):
     ev_hot_3, ev_21_plus_3, ev_any_pair, ev_bust_it = side_bets[0]
     kelly_pct_hot_3, kelly_pct_21_plus_3, kelly_pct_any_pair, kelly_pct_bust_it = side_bets[1]
 
+    # fractional kelly
+    fraction_kelly = 0.8
+
     # turn data into json
     json_data = json.dumps({
         'hot_3': f'{ev_hot_3:.4f}',
@@ -184,6 +210,10 @@ def infinite_new_shoe(request):
         'kelly_pct_21_plus_3': kelly_pct_21_plus_3,
         'kelly_pct_any_pair': kelly_pct_any_pair,
         'kelly_pct_bust_it': kelly_pct_bust_it,
+        'optimal_bet_hot_3':round(bankroll * kelly_pct_hot_3 * fraction_kelly, 2),
+        'optimal_bet_21_plus_3':round(bankroll * kelly_pct_21_plus_3 * fraction_kelly, 2),
+        'optimal_bet_any_pair':round(bankroll * kelly_pct_any_pair * fraction_kelly, 2),
+        'optimal_bet_bust_it':round(bankroll * kelly_pct_bust_it * fraction_kelly, 2),
     })
     return HttpResponse(json_data)
 

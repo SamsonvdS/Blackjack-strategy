@@ -56,6 +56,7 @@ def optimize_kelly(edge, lower=0, upper=1):
 
 def make_decision(Deckdf, dealer_hand, player_hand):
     """creates the basic_strategy chart"""
+    # get number of decks
     number_of_decks = Deckdf.number_of_decks
 
     # copy simple probdf so it doesn't interfere with other scripts
@@ -182,59 +183,62 @@ def make_decision(Deckdf, dealer_hand, player_hand):
     dealer_hand = dealer_hand
     player_hand = player_hand
 
-    open_card = dealer_hand[0]
+    # only calculate hand if enough cards are in it
+    if len(player_hand) >= 2:
+        open_card = dealer_hand[0]
 
-    card1 = player_hand[0]
-    card2 = player_hand[1]
+        card1 = player_hand[0]
+        card2 = player_hand[1]
 
 
-    player_hand = [int(card) if card != 'A' else 11 for card in player_hand]
+        player_hand = [int(card) if card != 'A' else 11 for card in player_hand]
 
 
-    # correct player hand for A's
-    if 11 in player_hand and sum(player_hand) > 21:
-        while sum(player_hand) > 21 and 11 in player_hand:
-            player_hand[player_hand.index(11)] = 1
+        # correct player hand for A's
+        if 11 in player_hand and sum(player_hand) > 21:
+            while sum(player_hand) > 21 and 11 in player_hand:
+                player_hand[player_hand.index(11)] = 1
 
+                
+        # select type of hand
+        if 11 in player_hand:
+            hand_type = 'Soft'
+        else:
+            hand_type = 'Hard'
             
-    # select type of hand
-    if 11 in player_hand:
-        hand_type = 'Soft'
-    else:
-        hand_type = 'Hard'
-        
-        
-    # stand at six cards or if player busts
-    if len(player_hand) == 6 or sum(player_hand) > 21:
-        action = 'stand'
+            
+        # stand at six cards or if player busts
+        if len(player_hand) == 6 or sum(player_hand) > 21:
+            action = 'stand'
 
-    # things for first two cards
-    elif len(player_hand) == 2:
-        # if hand is pair
-        if card1 == card2:
-            action = basic_strategy.loc[f"{card1}/{card2}", open_card]
+        # things for first two cards
+        elif len(player_hand) == 2:
+            # if hand is pair
+            if card1 == card2:
+                action = basic_strategy.loc[f"{card1}/{card2}", open_card]
+            else:
+                # get action from basic_strategy chart
+                action = basic_strategy.loc[f"{hand_type} {sum(player_hand)}", open_card].split('/')[0]
+            
         else:
             # get action from basic_strategy chart
-            action = basic_strategy.loc[f"{hand_type} {sum(player_hand)}", open_card].split('/')[0]
-        
+            action = basic_strategy.loc[f"{hand_type} {sum(player_hand)}", open_card].split('/')[-1]
+            
+
+        # adjust action if hit1/2
+        if action == "hit1":
+            if len(player_hand) == 5:
+                action = "hit"
+            else:
+                action = "stand"
+            
+        elif action == "hit2":
+            if len(player_hand) in [4, 5]:
+                action = "hit"
+            else:
+                action = "stand"
     else:
-        # get action from basic_strategy chart
-        action = basic_strategy.loc[f"{hand_type} {sum(player_hand)}", open_card].split('/')[-1]
-        
-
-    # adjust action if hit1/2
-    if action == "hit1":
-        if len(player_hand) == 5:
-            action = "hit"
-        else:
-            action = "stand"
-        
-    elif action == "hit2":
-        if len(player_hand) in [4, 5]:
-            action = "hit"
-        else:
-            action = "stand"
-
+        action = "none"
 
     # estimate edge
     avg_house_edge = 0.0065

@@ -17,12 +17,13 @@
         <a href="{% url 'index' %}">Home - Strategy</a><br>
 
         <h1>Strategy for - Infinite Blackjack - from Evolution Gaming</h1>
+        <p>Bankroll: <input type="number" id="bankroll" value="0"></p>
 
         <div class="column">
             <div class="all_suited_cards">
                 {% for heart, value in hearts %}
                     <div class="single_cards">
-                        <input type="number" id="{{ heart.image }}_number" class="card_button_number" step="1" value="{{ value }}"/>
+                        <input type="number" id="{{ heart.image }}_number" class="card_button_number" min="0" step="1" value="{{ value }}"/>
                         <input type="image" id="{{ heart.image }}_image" class="card_button_image" src="/static/cards_jpgs/{{ heart.image }}" alt="{{ heart.image }}">
                     </div>
                 {% endfor %}
@@ -31,7 +32,7 @@
             <div class="all_suited_cards">
                 {% for diamond, value in diamonds %}
                     <div class="single_cards">
-                        <input type="number" id="{{ diamond.image }}_number" class="card_button_number" step="1" value="{{ value }}"/>
+                        <input type="number" id="{{ diamond.image }}_number" class="card_button_number" min="0" step="1" value="{{ value }}"/>
                         <input type="image" id="{{ diamond.image }}_image" class="card_button_image" src="/static/cards_jpgs/{{ diamond.image }}" alt="{{ diamond.image }}">
                     </div>
                 {% endfor %}
@@ -40,7 +41,7 @@
             <div class="all_suited_cards">
             {% for spade, value in spades %}
                 <div class="single_cards">
-                    <input type="number" id="{{ spade.image }}_number" class="card_button_number" step="1" value="{{ value }}"/>
+                    <input type="number" id="{{ spade.image }}_number" class="card_button_number" min="0" step="1" value="{{ value }}"/>
                     <input type="image" id="{{ spade.image }}_image" class="card_button_image" src="/static/cards_jpgs/{{ spade.image }}" alt="{{ spade.image }}">
                 </div>
             {% endfor %}
@@ -49,7 +50,7 @@
             <div class="all_suited_cards">
             {% for club, value in clubs %}
                 <div class="single_cards">
-                    <input type="number" id="{{ club.image }}_number" class="card_button_number" step="1" value="{{ value }}"/>
+                    <input type="number" id="{{ club.image }}_number" class="card_button_number" min="0" step="1" value="{{ value }}"/>
                     <input type="image" id="{{ club.image }}_image" class="card_button_image" src="/static/cards_jpgs/{{ club.image }}" alt="{{ club.image }}">
                 </div>
             {% endfor %}
@@ -63,18 +64,22 @@
                 <p class="side_bets">
                     <input class="side_bets_ev" id="hot_3" value="{{ ev_hot_3 }}" readonly> Hot 3
                     <input class="kelly_pct" id="kelly_pct_hot_3" value="{{ kelly_pct_hot_3 }}" readonly>
+                    <input class="optimal_bet" id="optimal_bet_hot_3" readonly>
                 </p>
                 <p class="side_bets">
                     <input class="side_bets_ev" id="21_plus_3" value="{{ ev_21_plus_3 }}" readonly> 21+3
                     <input class="kelly_pct" id="kelly_pct_21_plus_3" value="{{ kelly_pct_21_plus_3 }}" readonly>
+                    <input class="optimal_bet" id="optimal_bet_21_plus_3" readonly>
                 </p>
                 <p class="side_bets">
                     <input class="side_bets_ev" id="any_pair" value="{{ ev_any_pair }}" readonly> Any Pair
                     <input class="kelly_pct" id="kelly_pct_any_pair" value="{{ kelly_pct_any_pair }}" readonly>
+                    <input class="optimal_bet" id="optimal_bet_any_pair" readonly>
                 </p>
                 <p class="side_bets">
                     <input class="side_bets_ev" id="bust_it" value="{{ ev_bust_it }}" readonly> Bust It
                     <input class="kelly_pct" id="kelly_pct_bust_it" value="{{ kelly_pct_bust_it }}" readonly>
+                    <input class="optimal_bet" id="optimal_bet_bust_it" readonly>
                 </p>
                 <br>
             
@@ -84,9 +89,12 @@
 
             <div class="hand_info">
                 <p class="results">
-                    <input class="results_input" id="true_count"> True Count
-                    <input class="kelly_pct" id="kelly_pct_hand_decision"> EV</p>
-                <p class="results"><input class="results_input" id="hand_decision"> Action</p>
+                    <input class="results_input" id="true_count" readonly> True Count
+                    <input class="results_input" id="kelly_pct_hand_decision" readonly>
+                    <input class="results_input" id="optimal_bet_hand_decision" readonly>
+                </p>
+
+                <p class="results"><input class="results_input" id="hand_decision" readonly></p>
                 
                 <button class="calculate_action">Calculate Action</button>
 

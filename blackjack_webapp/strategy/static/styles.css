@@ -34,8 +34,16 @@
 }
 .side_bets {
     display: block;
+    margin-top: 5px;
+    margin-bottom: 3px;
 }
 .kelly_pct {
+    width: 50px;
+    border-width: 1px;
+    color: white;
+    background-color: red;
+}
+.optimal_bet {
     width: 50px;
     border-width: 1px;
     color: white;
@@ -52,13 +60,15 @@
 .results {
     display: block;
 }
-#kelly_pct_hand_decision {
-    width: 40px;
-    background-color: white;
+#hand_decision {
+    width: 80px;
+    color: black;
+    font-weight: 600;
+    font-size: medium;
 }
 
 .calculate_action {
-    margin-bottom: 30px;
+    margin-bottom: 15px;
 }
 
 .undo_dealer {
