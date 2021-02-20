@@ -53,7 +53,7 @@ def calculate_side_bets(Deckdf):
     ev_hot_3, kelly_pct_hot_3 = calculate_ev_hot_3(Deckdf)
     ev_21_plus_3, kelly_pct_21_plus_3 = calculate_ev_21_plus_3(Deckdf)
     ev_any_pair, kelly_pct_any_pair = calculate_ev_any_pair(Deckdf)
-    ev_bust_it, kelly_pct_bust_it = calculate_ev_bust_it(Deckdf)
+    ev_bust_it, kelly_pct_bust_it = (0, 0) #calculate_ev_bust_it(Deckdf) | this takes too long (3 sec)
 
     expected_values = [ev_hot_3, ev_21_plus_3, ev_any_pair, ev_bust_it]
     kelly_pct = [kelly_pct_hot_3, kelly_pct_21_plus_3, kelly_pct_any_pair, kelly_pct_bust_it]

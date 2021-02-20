@@ -1,20 +1,17 @@
 # general imports
-import pandas as pd
 import numpy as np
 import json
-import ast  
+import ast
 
 # django imports
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.urls import reverse
 
 # main workframe imports
-from .models import Card_Image
 from .helpers import order_cards, how_to_play_hand, calculate_insurance, calculate_side_bets
 from .one_time_setups import setup_database_images
 from .infinite_blackjack.deck_df import Deckdf
-
 
 
 """
@@ -143,18 +140,18 @@ def infinite_new_round(request):
 
     # update deckdf
     deckdf.update_prob_df(Clubs, Diamonds, Hearts, Spades)
-
+    
     # calculate ev for bets
     ev_insurance = calculate_insurance(deckdf)
     side_bets = calculate_side_bets(deckdf)
-
+    
     # get expected values and optimal bet percentages (kelly criterion)
     ev_hot_3, ev_21_plus_3, ev_any_pair, ev_bust_it = side_bets[0]
     kelly_pct_hot_3, kelly_pct_21_plus_3, kelly_pct_any_pair, kelly_pct_bust_it = side_bets[1]
-
+    
     # fractional kelly
     fraction_kelly = 0.8
-
+    
     # turn data into json
     json_data = json.dumps({
         'hot_3': f'{ev_hot_3:.4f}',
