@@ -1,4 +1,6 @@
 """
+!!!!! If ERROR run in commandline: python3 manage.py migrate --run-syncdb !!!!!
+
 This is meant to setup the webapp backend for the first time
 - For example store the card images in the database (models.py)
 """
@@ -8,12 +10,15 @@ from .models import Card_Image
 def setup_database_images():
     """saves card images and data in database"""
     # only run function in no card_image objects
-    if Card_Image.objects.all():
-        return
+    try:
+        if Card_Image.objects.all():
+            return
+    except:
+        pass
 
     # absolute path to this file's directory
     absolute_path = os.path.dirname(os.path.abspath(__file__))
-
+    
     # save images data in database
     for filename in os.listdir(f"{absolute_path}/static/cards_jpgs"):
         # name part of the filename | 10S.jpg -> 10S
@@ -36,6 +41,7 @@ def setup_database_images():
             card=name[:-1],
             suit=suit,
         )
+        card_image.save()
 
     
         
