@@ -184,13 +184,13 @@ def make_decision(Deckdf, dealer_hand, player_hand):
     player_hand = player_hand
 
     # only calculate hand if enough cards are in it
-    if len(player_hand) >= 2:
+    if len(player_hand) >= 2 and len(dealer_hand) == 1:
         open_card = dealer_hand[0]
 
         card1 = player_hand[0]
         card2 = player_hand[1]
 
-
+        # turn player cards into card values
         player_hand = [int(card) if card != 'A' else 11 for card in player_hand]
 
 
@@ -216,14 +216,21 @@ def make_decision(Deckdf, dealer_hand, player_hand):
             # if hand is pair
             if card1 == card2:
                 action = basic_strategy.loc[f"{card1}/{card2}", open_card]
+
+                # action if hand cannot be splitted, split because double is possible
+                action2 = basic_strategy.loc[f"{hand_type} {sum(player_hand)}", open_card].split('/')[0]
+                
+                # combine split and alternative action
+                action = f'{action}/{action2}'
             else:
-                # get action from basic_strategy chart
+                # get action from basic_strategy chart, split because double is possible
                 action = basic_strategy.loc[f"{hand_type} {sum(player_hand)}", open_card].split('/')[0]
-            
+                
         else:
-            # get action from basic_strategy chart
+            # get action from basic_strategy chart, split because double not possible
             action = basic_strategy.loc[f"{hand_type} {sum(player_hand)}", open_card].split('/')[-1]
             
+
 
         # adjust action if hit1/2
         if action == "hit1":

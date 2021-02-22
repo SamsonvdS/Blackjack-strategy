@@ -158,8 +158,6 @@ function onClick(element) {
             for (var key in data) {
                 element = document.getElementById(key);
                 element.value = data[key];
-                console.log('ele', element)
-                console.log("value", element.value, data[key])
             }
 
             // adjust ev and results colors
@@ -406,7 +404,7 @@ function adjust_result_colors() {
             else if (result.value.includes('Double')) {
                 result.style.backgroundColor = "dodgerblue";
             }
-            else if (result.value === "Split") {
+            else if (result.value.includes("Split")) {
                 result.style.backgroundColor = "limegreen";
             }
             else {
