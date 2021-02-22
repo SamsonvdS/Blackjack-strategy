@@ -217,11 +217,12 @@ def make_decision(Deckdf, dealer_hand, player_hand):
             if card1 == card2:
                 action = basic_strategy.loc[f"{card1}/{card2}", open_card]
 
-                # action if hand cannot be splitted, split because double is possible
-                action2 = basic_strategy.loc[f"{hand_type} {sum(player_hand)}", open_card].split('/')[0]
-                
-                # combine split and alternative action
-                action = f'{action}/{action2}'
+                if action == "split":
+                    # action if hand cannot be splitted, split because double is possible
+                    action2 = basic_strategy.loc[f"{hand_type} {sum(player_hand)}", open_card].split('/')[0]
+                    
+                    # combine split and alternative action
+                    action = f'{action}/{action2}'
             else:
                 # get action from basic_strategy chart, split because double is possible
                 action = basic_strategy.loc[f"{hand_type} {sum(player_hand)}", open_card].split('/')[0]
@@ -246,7 +247,7 @@ def make_decision(Deckdf, dealer_hand, player_hand):
                 action = "stand"
     else:
         action = "none"
-
+    
     # estimate edge
     avg_house_edge = 0.0065
     edge = true_count * 0.0025 - avg_house_edge
