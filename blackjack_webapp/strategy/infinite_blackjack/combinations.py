@@ -15,7 +15,14 @@ class DealerCombinations:
         self.card_values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 
         # all dealer combinations with their respective outcomes
-        self.all_combinations = self.find_all_combination_outcomes(self)
+        self.all_combinations = self.find_all_combination_outcomes()
+
+        # probabilities for bust it side bet
+        self.bust_it_prob = {}
+
+        # probabilities for playing blackjack
+        self.open_card_prob = {}
+        self.blackjack_ev_prob = {}
 
         
         
@@ -117,12 +124,14 @@ class DealerCombinations:
 
 
 
+
+
+
+
+
     def combination_probabilities(self, Deckdf):
         # copy simple probdf so that it doesn't interfere with other calculations
         probdf_simple = Deckdf.probdf_simple.copy()
-
-        # get all combinations
-        all_outcomes = self.all_dealer_combinations
 
 
         # save probabilities of dealer (not) busting with a specific open card
@@ -140,7 +149,7 @@ class DealerCombinations:
             open_card_prob[card]['prob_not_busted_BJ'] = 0  # keep this because dealer doesn't check for BJ if open card is 10
             
 
-        # save probabilities of the following outcomes
+        # save probabilities of all possible outcomes
         prob_combos = {}
         prob_combos['prob_not_busted_17'] = 0
         prob_combos['prob_not_busted_18'] = 0
@@ -155,6 +164,9 @@ class DealerCombinations:
         prob_combos['prob_busted_7'] = 0
         prob_combos['prob_busted_8'] = 0
 
+
+        # get all combinations
+        all_outcomes = self.all_dealer_combinations
 
         # total cards in deck
         deck_length = sum(probdf_simple.loc[:, 'Total_cards'])
@@ -181,13 +193,52 @@ class DealerCombinations:
                 # add probabilities to the outcomes
                 prob_combos[outcome] += prob
                 
+                # add probabilities to each possible dealer open card
                 if not 'not' in outcome:
                     open_card_prob[combi[0]]['prob_busted'] += prob
                 else:
                     open_card_prob[combi[0]][outcome] += prob
                 
+        # rescale probabilities to 100%
+        open_card_prob = self.rescale_probabilities(open_card_prob)
+        self.open_card_prob = open_card_prob
+
+        # calculate probabilities for blackjack ev and bust it side bet
+        self.create_probability_dicts(prob_combos)
 
 
+
+    """ helper functions """
+
+    def create_probability_dicts(self, prob_combos):
+        """
+        creates dictionaries with probabilities needed for bust it side bet and 
+        to calculate the expected value of playing blackjack
+        """
+        # probabilities needed to calculate blackjack ev
+        self.blackjack_ev_prob = {}
+        self.blackjack_ev_prob['prob_busted'] = 0
+
+        # for either blackjack the game or the bust it side bet
+        self.bust_it_prob = {}
+        self.bust_it_prob['prob_not_busted'] = 0
+
+        # split prob_combos
+        for outcome in prob_combos:
+            if "not_busted" in outcome:
+                self.blackjack_ev_prob[outcome] = prob_combos[outcome]
+                self.bust_it_prob['prob_not_busted'] += prob_combos[outcome]
+            else:
+                self.blackjack_ev_prob['prob_busted'] += prob_combos[outcome]
+                self.bust_it_prob[outcome] = prob_combos[outcome]
+
+        # correct bust it probabilities, because blackjack pushes the bust it side bet
+        for prob in self.bust_it_prob:
+            self.bust_it_prob[prob] -= self.bust_it_prob[prob] * prob_combos['prob_not_busted_BJ']
+
+
+    def rescale_probabilities(open_card_prob):
+        """ rescales probabilities for every possible open card for the dealer """
         # rescale probabilities to scale of 1 (100%)
         for card in open_card_prob:
             card = open_card_prob[card]
@@ -203,6 +254,8 @@ class DealerCombinations:
             if total_prob:
                 for prob in card:
                     card[prob] /= total_prob
+        
+        return open_card_prob
 
 
 
@@ -212,5 +265,15 @@ class DealerCombinations:
 
 
 
+import time
+from .deck_df import Deckdf
+
+
+if __name__ == "__main__":
+    deckdf = Deckdf()
+
+    start = time.time()
+    dc = DealerCombinations()
+    print(time.time() - start)
 
 
