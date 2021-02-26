@@ -54,7 +54,8 @@ def optimize_kelly(edge, lower=0, upper=1):
     return lower
 
 
-def make_decision(Deckdf, dealer_hand, player_hand):
+
+def make_decision(Deckdf, DealerCombinations, dealer_hand, player_hand):
     """creates the basic_strategy chart"""
     # get number of decks
     number_of_decks = Deckdf.number_of_decks

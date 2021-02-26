@@ -2,6 +2,10 @@
 
 import math
 
+# minimum and maximum number of cards
+MIN_CARDS = 2
+MAX_CARDS = 13
+
 
 class DealerCombinations:
     """
@@ -25,8 +29,6 @@ class DealerCombinations:
         self.blackjack_ev_prob = {}
 
         
-        
-
 
     def find_all_combination_outcomes(self):
         """find hand combinations for each bust type and non-busts"""
@@ -102,34 +104,9 @@ class DealerCombinations:
 
 
 
-    def probability(self, combi, probdf_simple, deck_length):
-        """
-        takes a combination of cards and calculates number of permutations
-        returns probability of this specific combination of cards
-        """
-        unique = set(combi)
-        
-        total_permutations = 0
-        
-        for card in unique:       
-            # number of permutations to get this card as many times as it occurs in combi
-            n_permutations = math.perm(probdf_simple.at[card], combi.count(card))
-            
-            if not total_permutations:
-                total_permutations += n_permutations
-            else:
-                total_permutations *= n_permutations
-            
-        return total_permutations / math.perm(deck_length, len(combi))
 
-
-
-
-
-
-
-
-    def combination_probabilities(self, Deckdf):
+    def calculate_comb_prob(self, Deckdf):
+        """ calculates probabilities of all possible combinations of dealer hand outcome """
         # copy simple probdf so that it doesn't interfere with other calculations
         probdf_simple = Deckdf.probdf_simple.copy()
 
@@ -166,10 +143,22 @@ class DealerCombinations:
 
 
         # get all combinations
-        all_outcomes = self.all_dealer_combinations
+        all_outcomes = self.all_combinations
 
-        # total cards in deck
-        deck_length = sum(probdf_simple.loc[:, 'Total_cards'])
+        # total number of cards in deck
+        n_cards_in_deck = sum(probdf_simple.loc[:, 'Total_cards'])
+
+        # precalculate deck permutations
+        deck_perm = {len_hand: math.perm(n_cards_in_deck, len_hand) for len_hand in range(MIN_CARDS, MAX_CARDS + 1)}
+
+        # total number of cards of each card
+        n_each_card = probdf_simple.loc[:, 'Total_cards'].to_dict()
+
+        # all possible permutations for each card
+        all_card_perm = {}
+
+        for card in n_each_card:
+            all_card_perm[card] = {n_card: math.perm(n_each_card[card], n_card) for n_card in range(MAX_CARDS)}
 
         # total probability of dealer getting specific outcome
         for outcome in prob_combos:
@@ -179,7 +168,7 @@ class DealerCombinations:
                 
             for combi in all_outcomes[f'{outcome[5:]}']:
                 # probability of this specific combinations
-                prob = self.probability(combi, probdf_simple.loc[:, 'Total_cards'], deck_length)
+                prob = self.probability(combi, deck_perm, all_card_perm)
                 
                 # keep blackjack probabilities seperate, because dealer checks for BJ if open card is A and not if it is 10
                 if combi == ['A', '10']:
@@ -194,14 +183,16 @@ class DealerCombinations:
                 prob_combos[outcome] += prob
                 
                 # add probabilities to each possible dealer open card
-                if not 'not' in outcome:
-                    open_card_prob[combi[0]]['prob_busted'] += prob
-                else:
+                if 'not' in outcome:
                     open_card_prob[combi[0]][outcome] += prob
-                
-        # rescale probabilities to 100%
-        open_card_prob = self.rescale_probabilities(open_card_prob)
+                else:
+                    open_card_prob[combi[0]]['prob_busted'] += prob
+
+        # save open card probabilities
         self.open_card_prob = open_card_prob
+
+        # rescale probabilities to 100%
+        self.rescale_probabilities()
 
         # calculate probabilities for blackjack ev and bust it side bet
         self.create_probability_dicts(prob_combos)
@@ -237,11 +228,11 @@ class DealerCombinations:
             self.bust_it_prob[prob] -= self.bust_it_prob[prob] * prob_combos['prob_not_busted_BJ']
 
 
-    def rescale_probabilities(open_card_prob):
+    def rescale_probabilities(self):
         """ rescales probabilities for every possible open card for the dealer """
         # rescale probabilities to scale of 1 (100%)
-        for card in open_card_prob:
-            card = open_card_prob[card]
+        for card in self.open_card_prob:
+            card = self.open_card_prob[card]
             
             # total prob in card needed for rescaling
             total_prob = 0
@@ -255,7 +246,27 @@ class DealerCombinations:
                 for prob in card:
                     card[prob] /= total_prob
         
-        return open_card_prob
+
+    def probability(self, combi, deck_perm, all_card_perm):
+        """
+        takes a combination of cards and calculates number of permutations
+        returns probability of this specific combination of cards
+        """
+        # find unique cards in hand combination
+        unique = set(combi)
+        
+        total_permutations = 0
+        
+        for card in unique:       
+            # number of permutations to get this card as many times as it occurs in combi
+            n_permutations = all_card_perm[card][combi.count(card)] # math.perm(n_each_card[card], combi.count(card))
+            
+            if total_permutations:
+                total_permutations *= n_permutations
+            else:
+                total_permutations += n_permutations
+            
+        return total_permutations /  deck_perm[len(combi)]
 
 
 
@@ -264,16 +275,32 @@ class DealerCombinations:
 
 
 
-
-import time
-from .deck_df import Deckdf
 
 
 if __name__ == "__main__":
-    deckdf = Deckdf()
+    import time
+    from deck_df import Deckdf
+
+    deckdf = Deckdf(8)
 
     start = time.time()
     dc = DealerCombinations()
     print(time.time() - start)
 
+    start = time.time()
+    dc.calculate_comb_prob(deckdf)
+    print(time.time() - start)
 
+    print(dc.bust_it_prob)
+    print(dc.open_card_prob)
+    print(dc.blackjack_ev_prob)
+    
+    print("-------------")
+
+    # profile the code
+    import cProfile, pstats
+    cProfile.run("dc.calculate_comb_prob(deckdf)", "{}.profile".format(__file__))
+    s = pstats.Stats("{}.profile".format(__file__))
+    s.strip_dirs()
+    # only show the most time consuming things
+    s.sort_stats("time").print_stats(15)

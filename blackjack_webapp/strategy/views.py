@@ -12,6 +12,7 @@ from django.urls import reverse
 from .helpers import order_cards, how_to_play_hand, calculate_insurance, calculate_side_bets
 from .one_time_setups import setup_database_images
 from .infinite_blackjack.deck_df import Deckdf
+from .infinite_blackjack.combinations import DealerCombinations
 
 
 """
@@ -19,6 +20,9 @@ things that only need to be done once at server start
 """
 # create first probdf
 deckdf = Deckdf(number_of_decks=8)
+
+# get all dealer combinations
+dealer_combinations = DealerCombinations()
 
 # make sure that card images are in database
 setup_database_images()
@@ -36,9 +40,12 @@ def index(request):
 
 def infinite_blackjack(request):
     """for first load of infinite blackjack page"""
+    # calculate dealer hand outcome probabilities
+    dealer_combinations.calculate_comb_prob(deckdf)
+
     # calculate ev for bets
     ev_insurance = calculate_insurance(deckdf)
-    side_bets = calculate_side_bets(deckdf)
+    side_bets = calculate_side_bets(deckdf, dealer_combinations)
 
     ev_hot_3, ev_21_plus_3, ev_any_pair, ev_bust_it = side_bets[0]
     kelly_pct_hot_3, kelly_pct_21_plus_3, kelly_pct_any_pair, kelly_pct_bust_it = side_bets[1]
@@ -103,9 +110,12 @@ def infinite_calculate_hand(request):
     dealer_hand = [card[:-1] if card[:-1] not in tens else '10' for card in js_data['dealer_hand']]
     player_hand = [card[:-1] if card[:-1] not in tens else '10' for card in js_data['player_hand']]
 
+    # calculate dealer hand outcome probabilities
+    dealer_combinations.calculate_comb_prob(deckdf)
+
     # calculate player's decision and ev of insurance
     ev_insurance = calculate_insurance(deckdf)
-    hand_decision, true_count, kelly_pct = how_to_play_hand(deckdf, dealer_hand, player_hand)
+    hand_decision, true_count, kelly_pct = how_to_play_hand(deckdf, dealer_combinations, dealer_hand, player_hand)
     
     # fractional kelly
     fraction_kelly = 0.8
@@ -141,9 +151,12 @@ def infinite_new_round(request):
     # update deckdf
     deckdf.update_prob_df(Clubs, Diamonds, Hearts, Spades)
     
+    # calculate dealer hand outcome probabilities
+    dealer_combinations.calculate_comb_prob(deckdf)
+
     # calculate ev for bets
     ev_insurance = calculate_insurance(deckdf)
-    side_bets = calculate_side_bets(deckdf)
+    side_bets = calculate_side_bets(deckdf, dealer_combinations)
     
     # get expected values and optimal bet percentages (kelly criterion)
     ev_hot_3, ev_21_plus_3, ev_any_pair, ev_bust_it = side_bets[0]
@@ -185,9 +198,12 @@ def infinite_new_shoe(request):
     # reset deckdf
     deckdf.reset_probdf()
 
+    # calculate dealer hand outcome probabilities
+    dealer_combinations.calculate_comb_prob(deckdf)
+    
     # calculate ev for bets
     ev_insurance = calculate_insurance(deckdf)
-    side_bets = calculate_side_bets(deckdf)
+    side_bets = calculate_side_bets(deckdf, dealer_combinations)
 
     # get expected values and optimal bet percentages (kelly criterion)
     ev_hot_3, ev_21_plus_3, ev_any_pair, ev_bust_it = side_bets[0]
