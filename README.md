@@ -1,15 +1,19 @@
 # Blackjack-strategy
-<b>At least the first version is for Infinite Blackjack from Evolution Gaming.</b>
+**At least the first version is for *Infinite Blackjack from Evolution Gaming*.** (currently there is only one version)
 
-- Web interface for calculating strategy of blackjack hands. Exact probabilities for side bets, depending on deck composition, so that you know when to bet. 
-- Strategy for blackjack (main bet) on when to bet and how to play a hand.
+This is a web interface for calculating strategy of blackjack hands. 
+
+- The betting strategy depends on the deck composition (what cards are left in the deck and how many)
+- Exact probabilities are calculated for the side bets, so that you know when to bet. Also Kelly Criterion is used to calculate the optimal amount to bet.
+- Strategy for blackjack (the main bet) on when to bet and how to play a hand. Also Kelly Criterion is used to calculate the optimal amount to bet.
+- The main bet is not exactly calculated, but the tables from the book *Basic Blackjack by Stanford Wong* are used.
 
 ### Requirements
 - Python 3.8+
-
 - Django
 - Pandas
 
+- Computer with at least a 13.3 inch screen, and with a 16:9 screen dimension (don't worry this is a normal computer screen). If your screen is smaller than 13.3 inches, then the web interface is too impractical to use. 
 
 ## Usage
 Run in command line
@@ -18,7 +22,10 @@ To start webapp
 ```
 python3 manage.py runserver
 ```
-In browser type: http://127.0.0.1:8000/strategy and then select the correct Blackjack version
+In browser type: http://127.0.0.1:8000/strategy and then select the correct Blackjack version (currently there is only one version)
+
+- Once you are on the Blackjack page (where the cards are displayed), fill in the size of your bankroll and click on the New Shoe button. This will make sure that your bankroll size is taken into account when calculating your optimal bet size.
+- If you forget to click on the New Shoe button before you start playing Blackjack, don't worry. Just fill in your bankroll and next time you click the New Round button, it will register your bankroll.
 
 ### Clicking on the card images
 <b>Single Click</b><br>
@@ -42,11 +49,25 @@ Every extra card is given to player<br>
 - Split button will split the cards in your hand into two hands (max one split, and only for cards with same value)
 - Second Hand card will change the second/splitted hand into your current hand that is being played
 
+### Displayed (red) colored boxes
+Every (side) bet has its own colored boxes to display the statistical edge, the percentage of your bankroll to bet, and the amount of money to bet.
 
+#### For every group of boxes
 
+<b>Left top</b><br>
+These boxes display the statistical edge that you have for only that specific bet:
+- Negative and red means that the casino has the statistical edge
+- Positive and green means that you have the statistical edge
 
+<b>Left bottom</b><br>
+These boxes display the percentage of your bankroll to bet (you don't have to look at this. It is actually unnecessary information)
+- It is red if you should not bet and green if you should bet
 
-
+<b>Right bottom</b><br>
+These boxes display the amount of money that you should bet:
+- It is red if you should not bet and green if you should bet
+- Never bet more money than the amount displayed, because this optimal amount of money to bet is calculated with Kelly Criterion. 
+- It is advised to bet slightly less than the amount of displayed.
 
 
 
