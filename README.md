@@ -13,7 +13,7 @@ This is a web interface for calculating strategy of blackjack hands.
 - Django
 - Pandas
 
-- Computer with at least a 13.3 inch screen, and with a 16:9 screen dimension (don't worry this is a normal computer screen). If your screen is smaller than 13.3 inches, then the web interface is too impractical to use. 
+- Large computer screen to fit both this webapplication and the Blackjack game, or two computer screens.
 
 ## Usage
 Run in command line
